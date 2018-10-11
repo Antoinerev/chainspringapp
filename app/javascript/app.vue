@@ -6,9 +6,10 @@
 
 <script>
 export default {
+  props: ['message'],
   data: function () {
     return {
-      message: "Hello Vue!"
+      message_default: "Hello Vue!"
     }
   }
 }
