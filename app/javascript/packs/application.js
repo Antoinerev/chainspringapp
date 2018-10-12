@@ -3,8 +3,13 @@ import Vue from 'vue/dist/vue.esm'
 import TurbolinksAdapter from 'vue-turbolinks'
 Vue.use(TurbolinksAdapter)
 
+import D3Network from 'vue-d3-network'
+Vue.component('d3-network', D3Network)
+
 import App from '../app.vue'
 Vue.component('app', App)
+
+
 
 document.addEventListener('turbolinks:load', () => {
   const app = new Vue({
