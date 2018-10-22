@@ -1,1 +1,9 @@
-<app :users="<%= @users.to_json %>"></app>
+<h1>Users mapped : <%= @users.count %></h1>
+
+<ul>
+<% @users.each do |user| %>
+  <li>
+    <%= link_to "#{user.name}'s map", user_path(user) %>
+  </li>
+<% end %>
+</ul>

@@ -1,7 +1,7 @@
 <template>
   <div id="app">
   <div class="title">
-    <h1>Laure Merlin </h1>
+    <h1>{{user.name}}</h1>
 
     <ul class="menu">
       <li>
@@ -26,35 +26,28 @@
 export default {
   props: ['d3-network', 'user'],
   data () {
-      return {
-        nodes: [
-          { id: 1, name: 'kitesurfing', _color: 'yellow'},
-          { id: 2, name: 'cooking recipes'},
-          { id: 3, name:'sociology', _color: 'purple' },
-          { id: 4, name:'Laure Merlin', _color: 'red' }
-        ],
-        links: [
-          { sid: 4, tid: 1 },
-          { sid: 4, tid: 2 },
-          { sid: 4, tid: 3 },
-          { sid: 2, tid: 3 }
-        ],
-        nodeSize:40,
-        canvas:false
-
-      }
+    return {
+      nodeSize:40,
+      canvas:false
+    }
+  },
+  computed:{
+    nodes(){
+      return this.user.nodes
     },
-    computed:{
-      options(){
-        return{
-          force: 4000,
-          size:{ w:600, h:600},
-          nodeSize: this.nodeSize,
-          nodeLabels: true,
-          canvas: this.canvas
-        }
+    links(){
+      return this.user.links
+    },
+    options(){
+      return{
+        force: 4000,
+        size:{ w:1200, h:800},
+        nodeSize: this.nodeSize,
+        nodeLabels: true,
+        canvas: this.canvas
       }
     }
+  }
 }
 </script>
 
