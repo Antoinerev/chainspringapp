@@ -3,5 +3,11 @@ Rails.application.routes.draw do
 
   resources :users
   resources :markdown_readers, controller: :maps
-  # For details on the DSL available within this file, see http://guides.rubyonrails.org/routing.html
+
+  namespace :api, defaults: { format: :json } do
+    namespace :v1 do
+      # resources :spaces, only: :index
+      get 'map/build', to: 'maps#build_map'
+    end
+  end
 end

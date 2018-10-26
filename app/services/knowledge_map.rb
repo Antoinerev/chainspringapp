@@ -1,31 +1,45 @@
 class KnowledgeMap
   attr_accessor :user, :nodes, :links
 
-  def initialize(user)
-    @user = user
+  def initialize(node)
+    @node = node
   end
   def build_v1
-    user_color = 'red'
-    domain_color = 'purple'
-    ki_color = 'blue'
+    node_colors = {
+      user: 'red',
+      domain: 'purple',
+      ki: 'blue'
+    }
+
     @nodes = []
     @links = []
     @id = 1
 
-    user_node = Node.new(name: @user.name, _color: user_color)
-    @nodes << user_node
-    @user.unique_domains.each do |domain|
-      domain_node = Node.new(name: domain.name, _color: domain_color)
-      link = { sid: user_node.id, tid: domain_node.id }
-      @nodes << domain_node
-      @links << link
-      domain.knowledge_items.each do |ki|
-        ki_node = Node.new(name: ki.title, _color: ki_color)
-        link = { sid: domain_node.id, tid: ki_node.id }
-        @nodes << ki_node
+    node = Node.new(name: @node.name, _color: node_colors[node_key(@node)])
+    @nodes << node
+    if @node.descendants
+      @node.descendants.each do |descendant|
+        descendant_node = Node.new(name: descendant.name, _color: node_colors[node_key(descendant)])
+        link = { sid: node.id, tid: descendant_node.id }
+        @nodes << descendant_node
         @links << link
+        if descendant.descendants
+          descendant.descendants.each do |descendant2|
+            descendant2_node = Node.new(name: descendant2.name, _color: node_colors[node_key(descendant2)])
+            link = { sid: descendant_node.id, tid: descendant2_node.id }
+            @nodes << descendant2_node
+            @links << link
+          end
+        end
       end
     end
-    return {name: @user.name, nodes: @nodes, links: @links}
+    return {name: @node.name, nodes: @nodes, links: @links}
   end
+
+  private
+
+  def node_key(node)
+    node.type.downcase.to_sym
+  end
+
 end
