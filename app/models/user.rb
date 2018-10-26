@@ -6,6 +6,7 @@ class User < ApplicationRecord
 
   def attributes
     {
+      id: nil,
       name: nil,
       type: nil,
       ascendants: nil,

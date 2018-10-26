@@ -8,24 +8,24 @@ class KnowledgeMap
     node_colors = {
       user: 'red',
       domain: 'purple',
-      ki: 'blue'
+      knowledge_item: 'blue'
     }
 
     @nodes = []
     @links = []
     @id = 1
 
-    node = Node.new(name: @node.name, _color: node_colors[node_key(@node)])
+    node = Node.new(id: @node.id, type: @node.type, name: @node.name, _color: node_colors[node_key(@node)])
     @nodes << node
     if @node.descendants
       @node.descendants.each do |descendant|
-        descendant_node = Node.new(name: descendant.name, _color: node_colors[node_key(descendant)])
+        descendant_node = Node.new(id: descendant.id, type: descendant.type, name: descendant.name, _color: node_colors[node_key(descendant)])
         link = { sid: node.id, tid: descendant_node.id }
         @nodes << descendant_node
         @links << link
         if descendant.descendants
           descendant.descendants.each do |descendant2|
-            descendant2_node = Node.new(name: descendant2.name, _color: node_colors[node_key(descendant2)])
+            descendant2_node = Node.new(id: descendant2.id, type: descendant2.type, name: descendant2.name, _color: node_colors[node_key(descendant2)])
             link = { sid: descendant_node.id, tid: descendant2_node.id }
             @nodes << descendant2_node
             @links << link
@@ -39,7 +39,7 @@ class KnowledgeMap
   private
 
   def node_key(node)
-    node.type.downcase.to_sym
+    node.type.underscore.to_sym
   end
 
 end
