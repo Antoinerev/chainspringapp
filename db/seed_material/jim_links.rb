@@ -1,4 +1,4 @@
-{
+@sample_users << {
   user_name: "Jim",
   domains: [
     {

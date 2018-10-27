@@ -28,7 +28,7 @@ class Node
       @id = new_id
       return self
     else
-      return node.errors.messages
+      return self.errors.messages
     end
 
   end

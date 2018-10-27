@@ -1,6 +1,6 @@
-{
+@sample_users << {
   user_name: "Nicola",
-  domains: {
+  domains: [
     {
       domain_name: "Rapport à la morale",
       knowledge_item: {
@@ -10,6 +10,7 @@
         kind: "",
         time_needed: "",
         comment: ""
+      }
     },
     {
       domain_name: "Gestion de conflits",
@@ -28,7 +29,7 @@
         title: "Preparing my own conference",
         creator: "self",
         link: "",
-        kind: "interviews",
+        kind: "",
         time_needed: "",
         comment: "25 interviews on ethics in business"
       }
@@ -120,58 +121,6 @@
         time_needed: "",
         comment: ""
       }
-    },
-    {
-      domain_name: "",
-      knowledge_item: {
-        title: "",
-        creator: "",
-        link: "",
-        kind: "",
-        time_needed: "",
-        comment: ""
-      }
     }
-  },
+  ]
 }
-<!-- # Nicola
-
-## Rapport à la morale
-
-* Généalogie de la morale, Nietzsche
-
-## Gestion de conflits
-
-* DESC tool
-
-## Ethics
-
-* Preparing my own conference
-    25 interviews on ethics in business
-
-## Bi-culturalism
-
-* Study & work in French and Anglo-Saxon environments
-
-## Conferences series
-
-* Jean-François Zobrist
-* Dirigeants Responsables de l'Ouest
-    * Marc Halevy
-        Paradigm shifts 550 years
-
-## Communication
-
-* 'words are loaded guns' JP Sartre
-* Start with the positive
-* Respect & empathy
-
-## Humanism
-
-* Migrants
-
-# POC for ChainSpring.co
-
-by @lauremerlin
-
- -->
