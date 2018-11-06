@@ -1,9 +1,16 @@
 class Api::V1::MapsController < Api::V1::BaseController
-  before_action :set_node
+  before_action :set_node, only: :build_map
 
   def build_map
     @map = KnowledgeMap.new(@node).build_v1
     render json: @map
+  end
+
+  def search
+    keyword = params[:keyword].capitalize
+    nodes = Domain.where('name like ?', "%#{keyword}%")
+    @node = nodes.first
+    build_map
   end
 
 

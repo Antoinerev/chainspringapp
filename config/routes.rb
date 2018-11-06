@@ -8,6 +8,7 @@ Rails.application.routes.draw do
     namespace :v1 do
       # resources :spaces, only: :index
       get 'map/build', to: 'maps#build_map'
+      get 'map/search', to: 'maps#search'
     end
   end
 end

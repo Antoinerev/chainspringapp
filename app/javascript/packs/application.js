@@ -1,7 +1,7 @@
 import Vue from 'vue/dist/vue.esm'
 
-import TurbolinksAdapter from 'vue-turbolinks'
-Vue.use(TurbolinksAdapter)
+// import TurbolinksAdapter from 'vue-turbolinks'
+// Vue.use(TurbolinksAdapter)
 
 import Axios from 'axios';
 Vue.use(Axios);

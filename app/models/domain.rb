@@ -4,6 +4,8 @@ class Domain < ApplicationRecord
   has_many :knowledge_items
   has_many :users, through: :knowledge_items
 
+  before_save ->{capitalize('name')}
+
   def attributes
     {
       id: nil,

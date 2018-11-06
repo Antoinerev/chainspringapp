@@ -6,6 +6,8 @@ class KnowledgeItem < ApplicationRecord
 
   enum kind: {undefined: 0, book: 1, online_text: 2, online_video: 3, mobile_app: 4, place: 5, website: 6}
 
+  before_save ->{capitalize('title')}
+
   def attributes
     {
       id: nil,
