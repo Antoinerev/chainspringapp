@@ -6,9 +6,9 @@ class KnowledgeMap
   end
   def build_v1
     node_colors = {
-      user: 'red',
-      domain: 'purple',
-      knowledge_item: 'blue'
+      user: '#26a424',
+      domain: '#fc770a',
+      knowledge_item: '#42c4ef'
     }
 
     @nodes = []
