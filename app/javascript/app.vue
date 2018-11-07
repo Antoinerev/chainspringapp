@@ -4,11 +4,14 @@
     <h1>{{name}}</h1>
   </div>
   <div id="controls">
+    <a href="/users">Choose demo user</a>
     <form @submit.prevent="search(keyword)">
       <input name="search" v-model="keyword"/>
       <button type="submit">Search</button>
+      <transition name="fade">
+        <div v-if="flash.show" class="notice-msg">{{flash.text}}</div>
+      </transition>
     </form>
-    <a href="/">Home</a>
   </div>
     <d3-network ref='net' :net-nodes="nodes" :net-links="links" :options="options"  @node-click="refreshMap"/>
   </div>
@@ -30,7 +33,9 @@ export default {
       links: [],
       nodeSize:40,
       canvas:false,
-      keyword: ""
+      keyword: "",
+      alternative_nodes: [],
+      flash: {text: "", show: false}
     }
   },
   computed:{
@@ -63,9 +68,18 @@ export default {
           return response.data;
         })
         .then(data => {
-          this.name = data.name;
-          this.nodes = data.nodes;
-          this.links = data.links;
+          if (data.map.name != "") {
+            this.name = data.map.name;
+            this.nodes = data.map.nodes;
+            this.links = data.map.links;
+            this.alternative_nodes = data.alternative_nodes;
+          } else {
+            this.flash.text = "searching " + this.keyword + ": " + data.map.message;
+            this.flash.show = true;
+            setTimeout(() => {
+              this.flash.show = false;
+            }, 3000);
+          }
         });
       window.scrollTo(0,1000);
     },
@@ -86,9 +100,10 @@ export default {
           return response.data;
         })
         .then(data => {
-          this.name = data.name;
-          this.nodes = data.nodes;
-          this.links = data.links;
+          this.name = data.map.name;
+          this.nodes = data.map.nodes;
+          this.links = data.map.links;
+          this.alternative_nodes = data.alternative_nodes;
         });
       window.scrollTo(0,1000);
     }

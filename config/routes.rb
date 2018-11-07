@@ -1,5 +1,5 @@
 Rails.application.routes.draw do
-  root to: 'users#index'
+  root to: 'users#show', id: 3
 
   resources :users
   resources :markdown_readers, controller: :maps
