@@ -31,7 +31,7 @@ export default {
       name: "",
       nodes:[],
       links: [],
-      nodeSize:40,
+      nodeSize:20,
       canvas:false,
       keyword: "",
       alternative_nodes: [],
@@ -41,7 +41,7 @@ export default {
   computed:{
     options(){
       return{
-        force: 4000,
+        force: 2000,
         size:{ w:1200, h:600},
         nodeSize: this.nodeSize,
         nodeLabels: true,
