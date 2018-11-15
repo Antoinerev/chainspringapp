@@ -21,6 +21,10 @@ class Api::V1::MapsController < Api::V1::BaseController
     build_map
   end
 
+  def update
+    binding.pry
+  end
+
 
   private
 
