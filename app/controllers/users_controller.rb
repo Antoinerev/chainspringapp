@@ -1,4 +1,5 @@
 class UsersController < ApplicationController
+  # before_action :authenticate_user!, except: :index
   def index
     @users = User.all
   end
@@ -25,5 +26,11 @@ class UsersController < ApplicationController
   end
 
   def destroy
+  end
+
+  private
+
+  def set_user
+
   end
 end
