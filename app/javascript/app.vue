@@ -13,9 +13,9 @@
       </transition>
     </form>
     <form v-if="addKI" @submit.prevent="addInfo(newKnowledgeItem)" id="add_form">
-      <label>Domain</label>
+      <label>Topic</label>
       <input type="text" name="domain" v-model="newKnowledgeItem.domain" />
-      <label>title</label>
+      <label>Reference</label>
       <input type="text" name="title" v-model="newKnowledgeItem.title" />
       <button type="submit">Save</button>
     </form>
