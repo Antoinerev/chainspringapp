@@ -39,7 +39,7 @@ export default {
       name: "",
       nodes:[],
       links: [],
-      nodeSize:20,
+      nodeSize:18,
       canvas:false,
       keyword: "",
       alternative_nodes: [],
@@ -59,7 +59,7 @@ export default {
     options(){
       return{
         force: 2000,
-        size:{ w:1200, h:600},
+        size:{ w:1200, h:700},
         nodeSize: this.nodeSize,
         nodeLabels: true,
         canvas: this.canvas
