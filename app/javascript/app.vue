@@ -79,12 +79,12 @@ export default {
     },
     addInfo(newInfo) {
       if(this.addKI) {
-        let newKiNode = {id: Date.now(), _color: "#42c4ef", name: newInfo.title, object_type: "KnowledgeItem"};
+        let newKiNode = {id: Date.now(), _size: 60, _color: "#42c4ef", name: newInfo.title, object_type: "KnowledgeItem"};
         this.nodes.push(newKiNode);
         var domainNode = this.nodes.filter(node => (node.name == newInfo.domain && node.object_type == "Domain"));
 
         if(domainNode.length  < 1) {
-          domainNode = [{id: Date.now()+1, _color: "#fc770a", name: newInfo.domain, object_type: "Domain"}];
+          domainNode = [{id: Date.now()+1, _size: 60, _labelClass: 'test-class', _color: "#fc770a", name: newInfo.domain, object_type: "Domain"}];
           this.nodes.push(domainNode[0]);
           var userNodes = this.nodes.filter(node => node.object_type == "User");
           if(userNodes.length > 0) {
