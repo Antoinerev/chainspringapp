@@ -1,12 +1,19 @@
 class UsersController < ApplicationController
-  # before_action :authenticate_user!, except: :index
+  before_action :authenticate_user!, except: [:index, :show]
   def index
     @users = User.all
   end
 
   def show
-    @user = User.find(params[:id])
+    if params[:id]
+      @user = User.find(params[:id])
+    elsif current_user
+      @user = current_user
+    else
+      @user = User.find(3)
+    end
     @user_map = KnowledgeMap.new(@user).build_v1
+    @user_map[:current_user] = current_user ? current_user.id : ""
   end
 
   def new

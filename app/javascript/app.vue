@@ -4,6 +4,8 @@
     <h1>{{name}}</h1>
   </div>
   <div id="controls">
+    <a v-if="user.current_user" href="users/sign_out" data-method="delete">log out</a>
+    <a v-else href="users/sign_in">login</a>
     <a href="/users">Choose demo user</a>
     <form @submit.prevent="search(keyword)" id="search_form">
       <input name="search" v-model="keyword"/>
@@ -19,7 +21,7 @@
       <input type="text" name="title" v-model="newKnowledgeItem.title" />
       <button type="submit">Save</button>
     </form>
-    <button @click="switchAddKI">{{newKIButton}}</button>
+      <button v-if="user.current_user" @click="switchAddKI">{{newKIButton}}</button>
   </div>
     <d3-network ref='net' :net-nodes="nodes" :net-links="links" :options="options"  @node-click="refreshMap"/>
   </div>

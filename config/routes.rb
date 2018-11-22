@@ -1,6 +1,6 @@
 Rails.application.routes.draw do
   devise_for :users
-  root to: 'users#show', id: 3
+  root to: 'users#show'
 
   resources :users
   resources :markdown_readers, controller: :maps
