@@ -1,5 +1,6 @@
 class Api::V1::MapsController < Api::V1::BaseController
   before_action :set_node, only: :build_map
+  skip_before_action :verify_authenticity_token
 
   def build_map
     map = KnowledgeMap.new(@node).build_v1
@@ -22,7 +23,20 @@ class Api::V1::MapsController < Api::V1::BaseController
   end
 
   def update
-    binding.pry
+    @user = User.find(get_new_info[:userId].to_i)
+    puts "@user : #{@user.id} / #{@user.name}"
+    @domain = get_domain
+    puts "@domain : #{@domain.id}"
+    new_ki = KnowledgeItem.new(title: get_new_info[:title])
+    new_ki.user = @user
+    new_ki.domain = @domain
+    puts "new_ki : #{new_ki}"
+
+    if new_ki.save
+      redirect_to user_path(@user), notice: "new KI saved"
+    else
+      redirect_to user_path(@user), alert: "new KI could not be saved"
+    end
   end
 
 
@@ -30,6 +44,18 @@ class Api::V1::MapsController < Api::V1::BaseController
 
   def get_params
     @localization = params[:localization]
+  end
+  def get_new_info
+    params.require(:newInfo).permit(:userId, :domain, :title, :kind, :link, :time_needed)
+  end
+  def get_domain
+    if domain_name = get_new_info[:domain]
+      puts "domain_name : #{domain_name}"
+      domain = Domain.find_or_create_by(name: domain_name.capitalize)
+      return domain
+    else
+      return nil
+    end
   end
 
   def set_node

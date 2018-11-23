@@ -13,7 +13,7 @@ class UsersController < ApplicationController
       @user = User.find(3)
     end
     @user_map = KnowledgeMap.new(@user).build_v1
-    @user_map[:current_user] = current_user ? current_user.id : ""
+    @user_map[:id] = current_user ? current_user.id : nil
   end
 
   def new

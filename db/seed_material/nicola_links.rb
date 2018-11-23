@@ -1,5 +1,8 @@
 @sample_users << {
   user_name: "Nicola",
+  email: "antoinerev+nicola@gmail.com",
+  password: "123456",
+  password_confirmation: "123456",
   domains: [
     {
       domain_name: "Rapport à la morale",

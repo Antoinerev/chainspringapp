@@ -1,5 +1,8 @@
 @sample_users << {
   user_name: "Jim",
+  email: "antoinerev+jim@gmail.com",
+  password: "123456",
+  password_confirmation: "123456",
   domains: [
     {
       domain_name: "Kitesurfing",

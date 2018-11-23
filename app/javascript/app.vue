@@ -4,8 +4,9 @@
     <h1>{{name}}</h1>
   </div>
   <div id="controls">
-    <a v-if="user.current_user" href="users/sign_out" data-method="delete">log out</a>
-    <a v-else href="users/sign_in">login</a>
+    <a v-if="user.id" href="../users/sign_out" data-method="delete">log out</a>
+    <a v-else href="../users/sign_in">login</a>
+    <a v-if="user.id" href="/">Show my map</a>
     <a href="/users">Choose demo user</a>
     <form @submit.prevent="search(keyword)" id="search_form">
       <input name="search" v-model="keyword"/>
@@ -21,7 +22,7 @@
       <input type="text" name="title" v-model="newKnowledgeItem.title" />
       <button type="submit">Save</button>
     </form>
-      <button v-if="user.current_user" @click="switchAddKI">{{newKIButton}}</button>
+      <button v-if="user.id" @click="switchAddKI">{{newKIButton}}</button>
   </div>
     <d3-network ref='net' :net-nodes="nodes" :net-links="links" :options="options"  @node-click="refreshMap"/>
   </div>
@@ -30,7 +31,7 @@
 <script>
 
 export default {
-  props: ['d3-network', 'user'],
+  props: ['d3-network', 'user', 'root_url'],
   created() {
     // this.getMapFromApi()
     this.nodes = this.user.nodes;
@@ -52,7 +53,7 @@ export default {
         domain: '',
         title: '',
         kind: '',
-        timeNeeded: '',
+        time_needed: '',
         link: ''
       }
     }
@@ -81,12 +82,12 @@ export default {
     },
     addInfo(newInfo) {
       if(this.addKI) {
-        let newKiNode = {id: Date.now(), _size: 60, _color: "#42c4ef", name: newInfo.title, object_type: "KnowledgeItem"};
+        let newKiNode = {id: Date.now(), _size: 20, _color: "#42c4ef", name: newInfo.title, object_type: "KnowledgeItem"};
         this.nodes.push(newKiNode);
         var domainNode = this.nodes.filter(node => (node.name == newInfo.domain && node.object_type == "Domain"));
 
         if(domainNode.length  < 1) {
-          domainNode = [{id: Date.now()+1, _size: 60, _labelClass: 'test-class', _color: "#fc770a", name: newInfo.domain, object_type: "Domain"}];
+          domainNode = [{id: Date.now()+1, _size: 22, _labelClass: 'test-class', _color: "#fc770a", name: newInfo.domain, object_type: "Domain"}];
           this.nodes.push(domainNode[0]);
           var userNodes = this.nodes.filter(node => node.object_type == "User");
           if(userNodes.length > 0) {
@@ -95,15 +96,15 @@ export default {
         }
         this.links.push({sid: domainNode[0].id, tid: newKiNode.id});
       }
-      // this.sendUpdate(newInfo);
+      this.sendUpdate(newInfo);
     },
-    sendUpdate() {
+    sendUpdate(newInfo) {
       // console.log({newInfo});
+      newInfo.userId = this.user.id;
+      console.log(newInfo);
       var api_url = '/api/v1/map/update';
       var requestParams = {
-            params: {
               newInfo: newInfo
-            }
           }
       this.$http
         .post(api_url, requestParams)

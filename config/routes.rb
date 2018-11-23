@@ -10,6 +10,7 @@ Rails.application.routes.draw do
       # resources :spaces, only: :index
       get 'map/build', to: 'maps#build_map'
       get 'map/search', to: 'maps#search'
+      post 'map/update', to: 'maps#update'
     end
   end
 end
