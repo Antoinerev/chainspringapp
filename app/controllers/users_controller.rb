@@ -1,5 +1,5 @@
 class UsersController < ApplicationController
-  before_action :authenticate_user!, except: [:index, :show]
+  # before_action :authenticate_user!, except: [:index, :show]
   def index
     @users = User.all
   end
@@ -10,7 +10,7 @@ class UsersController < ApplicationController
     elsif current_user
       @user = current_user
     else
-      @user = User.find(3)
+      @user = User.first
     end
     @user_map = KnowledgeMap.new(@user).build_v1
     @user_map[:id] = current_user ? current_user.id : nil
