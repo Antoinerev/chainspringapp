@@ -9,7 +9,8 @@ class KnowledgeMap
       user: '#26a424',
       linked_user: '#B3D5B2',
       domain: '#fc770a',
-      knowledge_item: '#42c4ef'
+      knowledge_item: '#42c4ef',
+      secondary: '#B3D5B2'
     }
     link_colors =  {
       primary: '#87db1c',
@@ -24,6 +25,7 @@ class KnowledgeMap
       node = Node.new(id: @node_object.id, type: @node_object.type, name: @node_object.name, _color: node_colors[node_key(@node_object)])
       @nodes << node
       @nodes_objects << @node_object
+
       if new_nodes_objects = @node_object.ascendants
         new_nodes_objects -= @nodes_objects
         new_nodes_objects.each do |ascendant|
@@ -59,8 +61,15 @@ class KnowledgeMap
           if new_nodes_objects = descendant.descendants
             new_nodes_objects -= @nodes_objects
             descendant.descendants.each do |descendant2|
-              descendant2_node = Node.new(id: descendant2.id, type: descendant2.type, name: descendant2.name, _color: node_colors[node_key(descendant2)])
-              link = { sid: descendant_node.id, tid: descendant2_node.id }
+              if descendant2.type == 'KnowledgeItem' && descendant2.user == @nodes_objects.first
+                node_color = node_colors[node_key(descendant2)]
+                link_color = link_colors[:primary]
+              else
+                node_color = node_colors[:secondary]
+                link_color = link_colors[:secondary]
+              end
+              descendant2_node = Node.new(id: descendant2.id, type: descendant2.type, name: descendant2.name, _color: node_color)
+              link = { sid: descendant_node.id, tid: descendant2_node.id, _color: link_color }
               @nodes << descendant2_node
               @links << link
               @nodes_objects += new_nodes_objects
