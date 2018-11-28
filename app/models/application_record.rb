@@ -8,8 +8,7 @@ class ApplicationRecord < ActiveRecord::Base
     self.descendants ? self.descendants.first.class.to_s : nil
   end
   def capitalize(attribute)
-    capitalized_attribute = self.send(attribute).split(" ").map(&:capitalize).join(" ")
-
-    self.update({attribute => capitalized_attribute}) unless self.send(attribute) == capitalized_attribute
+    capitalized_attribute = self.send(attribute).split(" ").map(&:capitalize).join(" ").strip
+    self[attribute] = capitalized_attribute
   end
 end

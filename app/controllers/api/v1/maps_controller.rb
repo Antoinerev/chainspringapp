@@ -52,11 +52,30 @@ class Api::V1::MapsController < Api::V1::BaseController
   def get_domain
     if domain_name = get_new_info[:domain]
       puts "domain_name : #{domain_name}"
-      domain = Domain.find_or_create_by(name: domain_name.capitalize)
+      domain = Domain.new(name: domain_name)
+      domain = compact_similar(domain)
       return domain
     else
       return nil
     end
+  end
+  def compact_similar(domain)
+    similar_domains = Domain.where(name: domain.name)
+    if similar_domains.size > 1
+
+      total_knowledge_items = similar_domains.map(&:knowledge_items).flatten
+      domain = similar_domains.first
+      similar_domains -= [domain]
+      similar_domains.each do |redondant_domain|
+        redondant_domain.knowledge_items.each{|ki| ki.update(domain_id: domain.id)}
+
+      end
+      if domain.knowledge_items.count == total_knowledge_items.count
+        similar_domains.each{|domain| domain.delete}
+      end
+    end
+    domain.save
+    return domain
   end
 
   def set_node
