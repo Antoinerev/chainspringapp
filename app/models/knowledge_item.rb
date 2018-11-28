@@ -12,11 +12,11 @@ class KnowledgeItem < ApplicationRecord
     {
       id: nil,
       name: nil,
-      type: nil,
-      ascendants: nil,
-      ascendants_type: nil,
-      descendants: nil,
-      descendants_type: nil
+      type: nil
+      # ascendants: nil,
+      # ascendants_type: nil,
+      # descendants: nil,
+      # descendants_type: nil
     }
   end
 

@@ -1,8 +1,9 @@
 class Api::V1::MapsController < Api::V1::BaseController
-  before_action :set_node, only: :build_map
+  # before_action :set_node, only: :build_map
   skip_before_action :verify_authenticity_token
 
   def build_map
+    set_node unless @node
     map = KnowledgeMap.new(@node).build_v1
     response = {map: map, alternative_nodes: @nodes_array}
     render json: response
@@ -60,9 +61,12 @@ class Api::V1::MapsController < Api::V1::BaseController
 
   def set_node
     node_id = params[:node_id].to_i
-    node_class = Object.const_get params[:node_class].camelize
-
-    @node =  node_class.find(node_id)
+     if params[:node_class]
+      node_class = Object.const_get params[:node_class].camelize
+      @node =  node_class.find(node_id)
+    else
+      nil
+    end
   end
 
 end

@@ -14,10 +14,10 @@ class User < ApplicationRecord
       name: nil,
       type: nil,
       ascendants: nil,
-      ascendants_type: nil,
-      descendants: nil,
-      descendants_type: nil,
-      domains_list: nil
+      ascendants_type: nil
+      # descendants: nil,
+      # descendants_type: nil,
+      # domains_list: nil
     }
   end
 

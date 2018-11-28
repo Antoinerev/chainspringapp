@@ -10,12 +10,12 @@ class Domain < ApplicationRecord
     {
       id: nil,
       name: nil,
-      type: nil,
-      ascendants: nil,
-      ascendants_type: nil,
-      descendants: nil,
-      descendants_type: nil,
-      knowledge_items: nil
+      type: nil
+      # ascendants: nil,
+      # ascendants_type: nil,
+      # descendants: nil,
+      # descendants_type: nil,
+      # knowledge_items: nil
     }
   end
 
