@@ -7,9 +7,13 @@ class KnowledgeMap
   def build_v1
     node_colors = {
       user: '#26a424',
-      linked_user: '#B3B3B2',
+      linked_user: '#B3D5B2',
       domain: '#fc770a',
       knowledge_item: '#42c4ef'
+    }
+    link_colors =  {
+      primary: '#87db1c',
+      secondary: '#D1D6A1'
     }
     @nodes_objects = []
     @nodes = []
@@ -37,7 +41,7 @@ class KnowledgeMap
         new_nodes_objects -= @nodes_objects
         new_nodes_objects.each do |linked_user|
           linked_user_node = Node.new(id: linked_user.id, type: linked_user.type, name: linked_user.name, _color: node_colors[:linked_user])
-          link = { sid: node.id, tid: linked_user_node.id }
+          link = { sid: node.id, tid: linked_user_node.id, _color: link_colors[:secondary] }
           @nodes << linked_user_node
           @links << link
           @nodes_objects += new_nodes_objects
