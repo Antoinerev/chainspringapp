@@ -26,8 +26,8 @@ class KnowledgeMap
       @nodes << node
       @nodes_objects << @node_object
 
-      if new_nodes_objects = @node_object.ascendants
-        new_nodes_objects -= @nodes_objects
+      new_nodes_objects = @node_object.ascendants ? @node_object.ascendants - @nodes_objects : []
+      if new_nodes_objects.present?
         new_nodes_objects.each do |ascendant|
           ascendant_node = Node.new(id: ascendant.id, type: ascendant.type, name: ascendant.name, _color: node_colors[node_key(ascendant)])
           link = { sid: node.id, tid: ascendant_node.id }
@@ -50,8 +50,8 @@ class KnowledgeMap
         end
       end
 
-      if new_nodes_objects = @node_object.descendants
-        new_nodes_objects -= @nodes_objects
+      new_nodes_objects = @node_object.descendants ? @node_object.descendants - @nodes_objects : []
+      if new_nodes_objects.present?
         new_nodes_objects.each do |descendant|
           descendant_node = Node.new(id: descendant.id, type: descendant.type, name: descendant.name, _color: node_colors[node_key(descendant)])
           link = { sid: node.id, tid: descendant_node.id }
