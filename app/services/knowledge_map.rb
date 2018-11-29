@@ -26,41 +26,41 @@ class KnowledgeMap
       @nodes << node
       @nodes_objects << @node_object
 
-      new_nodes_objects = @node_object.ascendants ? @node_object.ascendants - @nodes_objects : []
+      new_nodes_objects = @node_object.ascendants.present? ? @node_object.ascendants - @nodes_objects : []
       if new_nodes_objects.present?
         new_nodes_objects.each do |ascendant|
           ascendant_node = Node.new(id: ascendant.id, type: ascendant.type, name: ascendant.name, _color: node_colors[node_key(ascendant)])
           link = { sid: node.id, tid: ascendant_node.id }
           @nodes << ascendant_node
           @links << link
-          @nodes_objects += new_nodes_objects
         end
+        @nodes_objects += new_nodes_objects
       end
 
-      if new_nodes_objects = get_linked_users(@node_object)
+      new_nodes_objects = get_linked_users(@node_object).present? ? get_linked_users(@node_object) - @nodes_objects : []
+      if new_nodes_objects.present?
         puts "linked_users : #{new_nodes_objects}"
         puts "@nodes_objects : #{@nodes_objects}"
-        new_nodes_objects -= @nodes_objects
         new_nodes_objects.each do |linked_user|
           linked_user_node = Node.new(id: linked_user.id, type: linked_user.type, name: linked_user.name, _color: node_colors[:linked_user])
           link = { sid: node.id, tid: linked_user_node.id, _color: link_colors[:secondary] }
           @nodes << linked_user_node
           @links << link
-          @nodes_objects += new_nodes_objects
         end
+        @nodes_objects += new_nodes_objects
       end
 
-      new_nodes_objects = @node_object.descendants ? @node_object.descendants - @nodes_objects : []
+      new_nodes_objects = @node_object.descendants.present? ? @node_object.descendants - @nodes_objects : []
       if new_nodes_objects.present?
         new_nodes_objects.each do |descendant|
           descendant_node = Node.new(id: descendant.id, type: descendant.type, name: descendant.name, _color: node_colors[node_key(descendant)])
           link = { sid: node.id, tid: descendant_node.id }
           @nodes << descendant_node
           @links << link
-          @nodes_objects += new_nodes_objects
-          if new_nodes_objects = descendant.descendants
-            new_nodes_objects -= @nodes_objects
-            descendant.descendants.each do |descendant2|
+
+          new_nodes_objects_desc = descendant.descendants.present? ? descendant.descendants - @nodes_objects : []
+          if new_nodes_objects_desc.present?
+            new_nodes_objects_desc.each do |descendant2|
               if descendant2.type == 'KnowledgeItem' && descendant2.user == @nodes_objects.first
                 node_color = node_colors[node_key(descendant2)]
                 link_color = link_colors[:primary]
@@ -72,10 +72,11 @@ class KnowledgeMap
               link = { sid: descendant_node.id, tid: descendant2_node.id, _color: link_color }
               @nodes << descendant2_node
               @links << link
-              @nodes_objects += new_nodes_objects
             end
+            @nodes_objects += new_nodes_objects_desc
           end
         end
+        @nodes_objects += new_nodes_objects
       end
 
       return {name: @node_object.name, nodes: @nodes, links: @links}
@@ -91,6 +92,7 @@ class KnowledgeMap
     node.type.underscore.to_sym
   end
   def get_linked_users(node)
+    linked_users = []
     if node.type == 'Domain'
       domains = Domain.where(name: node.name)
       users = []
