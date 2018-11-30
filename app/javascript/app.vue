@@ -24,7 +24,7 @@
     </form>
       <button v-if="user.id" @click="switchAddKI">{{newKIButton}}</button>
   </div>
-    <d3-network ref='net' :net-nodes="nodes" :net-links="links" :options="options"  @node-click="refreshMap"/>
+    <d3-network ref='net' :net-nodes="nodes" :net-links="links" :options="options"  @node-click="selectAction"/>
   </div>
 </template>
 
@@ -112,6 +112,16 @@ export default {
           // console.log({response});
           return response.data;
         });
+    },
+    selectAction(event, node) {
+      if (node.object_type == 'KnowledgeItem') {
+        if (node.link != '') {
+          console.log({node});
+          // window.open(node.link, '_blank');
+        }
+      } else {
+        this.refreshMap(event, node);
+      }
     },
     refreshMap(event, node) {
       this.getMapFromApi(node.object_id, node.object_type)

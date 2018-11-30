@@ -8,17 +8,17 @@ class KnowledgeItem < ApplicationRecord
 
   after_initialize ->{capitalize('title')}
 
-  def attributes
-    {
-      id: nil,
-      name: nil,
-      type: nil
-      # ascendants: nil,
-      # ascendants_type: nil,
-      # descendants: nil,
-      # descendants_type: nil
-    }
-  end
+  # def attributes
+  #   {
+  #     id: nil,
+  #     name: nil,
+  #     type: nil
+  #     # ascendants: nil,
+  #     # ascendants_type: nil,
+  #     # descendants: nil,
+  #     # descendants_type: nil
+  #   }
+  # end
 
   def name
     self.title
