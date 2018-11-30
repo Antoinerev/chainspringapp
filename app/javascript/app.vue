@@ -116,8 +116,8 @@ export default {
     selectAction(event, node) {
       if (node.object_type == 'KnowledgeItem') {
         if (node.link != '') {
-          console.log({node});
-          // window.open(node.link, '_blank');
+          console.log(node.link);
+          window.open(node.link, '_blank');
         }
       } else {
         this.refreshMap(event, node);

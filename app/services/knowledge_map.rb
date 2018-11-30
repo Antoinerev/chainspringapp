@@ -44,7 +44,8 @@ class KnowledgeMap
   def create_nodes(new_nodes_objects, data_type = 'descendants')
     if new_nodes_objects.present?
       new_nodes_objects.each do |node_object|
-        new_node = Node.new(id: node_object.id, type: node_object.type, name: node_object.name, _color: colors(:node, node_key(node_object)))
+        new_node = Node.new(id: node_object.id, type: node_object.type, name: node_object.name, _color: colors(:node, node_key(node_object)),
+          link: link_from(node_object))
         link = { sid: @node.id, tid: new_node.id }
         @nodes << new_node
         @links << link
@@ -60,7 +61,8 @@ class KnowledgeMap
                 node_color = colors(:node, :secondary)
                 link_color = colors(:link, :secondary)
               end
-              descendant2_node = Node.new(id: descendant2.id, type: descendant2.type, name: descendant2.name, _color: node_color)
+              descendant2_node = Node.new(id: descendant2.id, type: descendant2.type, name: descendant2.name, _color: node_color,
+                link: link_from(descendant2))
               link = { sid: new_node.id, tid: descendant2_node.id, _color: link_color }
               @nodes << descendant2_node
               @links << link
@@ -103,5 +105,11 @@ class KnowledgeMap
     }
     return colors[type.to_sym][key.to_sym]
   end
-
+  def link_from(object)
+    if object.methods.include?(:link)
+      return object.link
+    else
+      return ""
+    end
+  end
 end
