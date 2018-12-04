@@ -22,7 +22,7 @@
       <input type="text" name="title" v-model="newKnowledgeItem.title" />
       <button type="submit">Save</button>
     </form>
-      <button v-if="user.id" @click="switchAddKI">{{newKIButton}}</button>
+      <button v-if="user.id && user.id == nodes[0].object_id && nodes[0].object_type == 'User'" @click="switchAddKI">{{newKIButton}}</button>
   </div>
     <d3-network ref='net' :net-nodes="nodes" :net-links="links" :options="options"  @node-click="selectAction"/>
   </div>
@@ -72,7 +72,7 @@ export default {
       if(this.addKI){
         return "Hide form"
       } else {
-        return "Add KI"
+        return "Add reference"
       }
     }
   },
