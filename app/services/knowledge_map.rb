@@ -31,9 +31,7 @@ class KnowledgeMap
         end
         @nodes_objects += new_nodes_objects
       end
-
-      return {name: @node_object.name, nodes: @nodes, links: @links}
-
+      return {name: @node_object.name, nodes: @nodes, links: @links, allKinds: KnowledgeItem.kinds.keys}
     else
       return {name: "", nodes: @nodes, links: @links, message: "no record found"}
     end

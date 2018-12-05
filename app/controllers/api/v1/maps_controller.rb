@@ -24,14 +24,7 @@ class Api::V1::MapsController < Api::V1::BaseController
   end
 
   def update
-    @user = User.find(get_new_info[:userId].to_i)
-    puts "@user : #{@user.id} / #{@user.name}"
-    @domain = get_domain
-    puts "@domain : #{@domain.id}"
-    new_ki = KnowledgeItem.new(title: get_new_info[:title])
-    new_ki.user = @user
-    new_ki.domain = @domain
-    puts "new_ki : #{new_ki}"
+    new_ki = KnowledgeItem.new(get_new_ki)
 
     if new_ki.save
       redirect_to user_path(@user), notice: "new KI saved"
@@ -46,15 +39,17 @@ class Api::V1::MapsController < Api::V1::BaseController
   def get_params
     @localization = params[:localization]
   end
-  def get_new_info
-    params.require(:newInfo).permit(:userId, :domain, :title, :kind, :link, :time_needed)
+  def get_new_ki
+    safe_params = params.require(:newInfo).permit(:user_id, :title, :kind, :link, :time_needed)
+    safe_params[:domain_id] = get_domain_id(params[:newInfo][:domain_name])
+    return safe_params
   end
-  def get_domain
-    if domain_name = get_new_info[:domain]
+  def get_domain_id(domain_name)
+    if domain_name
       puts "domain_name : #{domain_name}"
       domain = Domain.new(name: domain_name)
       domain = compact_similar(domain)
-      return domain
+      return domain.id
     else
       return nil
     end

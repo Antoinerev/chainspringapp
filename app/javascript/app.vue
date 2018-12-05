@@ -15,11 +15,22 @@
         <div v-if="flash.show" class="notice-msg">{{flash.text}}</div>
       </transition>
     </form>
-    <form v-if="addKI" @submit.prevent="addInfo(newKnowledgeItem)" id="add_form">
-      <label>Topic</label>
-      <input type="text" name="domain" v-model="newKnowledgeItem.domain" />
-      <label>Reference</label>
+    <form v-if="addKI" @submit.prevent="addInfo(newKnowledgeItem)" id="add_form" class="reference-form">
+      <label>Topic Name</label>
+      <input type="text" name="domain" v-model="newKnowledgeItem.domain_name" />
+      <br>
+      <label>Reference: title</label>
       <input type="text" name="title" v-model="newKnowledgeItem.title" />
+      <label>Kind</label>
+      <select v-model="newKnowledgeItem.kind">
+        <option v-for="kind in allKinds" v-bind:value="kind">
+          {{ kind }}
+        </option>
+      </select>
+      <label>Time to allocate</label>
+      <input type="text" name="time_needed" v-model="newKnowledgeItem.time_needed" />
+      <label>Link</label>
+      <input type="text" name="link" v-model="newKnowledgeItem.link" />
       <button type="submit">Save</button>
     </form>
       <button v-if="user.id && user.id == nodes[0].object_id && nodes[0].object_type == 'User'" @click="switchAddKI">{{newKIButton}}</button>
@@ -31,17 +42,19 @@
 <script>
 
 export default {
-  props: ['d3-network', 'user', 'root_url'],
+  props: ['d3-network', 'user'],
   created() {
     // this.getMapFromApi()
     this.nodes = this.user.nodes;
     this.links = this.user.links;
+    this.allKinds = this.user.allKinds;
   },
   data () {
     return {
       name: "",
       nodes:[],
       links: [],
+      allKinds: {},
       nodeSize:18,
       canvas:false,
       keyword: "",
@@ -49,8 +62,8 @@ export default {
       flash: {text: "", show: false},
       addKI: false,
       newKnowledgeItem: {
-        userId: '',
-        domain: '',
+        user_id: '',
+        domain_name: '',
         title: '',
         kind: '',
         time_needed: '',
@@ -82,12 +95,16 @@ export default {
     },
     addInfo(newInfo) {
       if(this.addKI) {
-        let newKiNode = {id: Date.now(), _size: 20, _color: "#42c4ef", name: newInfo.title, object_type: "KnowledgeItem"};
+        if(newInfo.link) {
+          newInfo.link = this.checkLink(newInfo.link);
+        }
+        let newKiNode = {id: Date.now(), _size: 20, _color: "#42c4ef", object_type: "KnowledgeItem",
+          name: newInfo.title, kind: newInfo.kind, time_needed: newInfo.time_needed, link: newInfo.link};
         this.nodes.push(newKiNode);
-        var domainNode = this.nodes.filter(node => (node.name == newInfo.domain && node.object_type == "Domain"));
+        var domainNode = this.nodes.filter(node => (node.name == newInfo.domain_name && node.object_type == "Domain"));
 
         if(domainNode.length  < 1) {
-          domainNode = [{id: Date.now()+1, _size: 22, _labelClass: 'test-class', _color: "#fc770a", name: newInfo.domain, object_type: "Domain"}];
+          domainNode = [{id: Date.now()+1, _size: 22, _labelClass: 'test-class', _color: "#fc770a", name: newInfo.domain_name, object_type: "Domain"}];
           this.nodes.push(domainNode[0]);
           var userNodes = this.nodes.filter(node => node.object_type == "User");
           if(userNodes.length > 0) {
@@ -95,12 +112,19 @@ export default {
           }
         }
         this.links.push({sid: domainNode[0].id, tid: newKiNode.id});
+        this.sendUpdate(newInfo);
       }
-      this.sendUpdate(newInfo);
+    },
+    checkLink(link) {
+      if(!/^https?:\/\//.test(link)) {
+        return 'http://' + link;
+      } else {
+        return link;
+      }
     },
     sendUpdate(newInfo) {
       // console.log({newInfo});
-      newInfo.userId = this.user.id;
+      newInfo.user_id = this.user.id;
       console.log(newInfo);
       var api_url = '/api/v1/map/update';
       var requestParams = {
@@ -116,8 +140,8 @@ export default {
     selectAction(event, node) {
       if (node.object_type == 'KnowledgeItem') {
         if (node.link != '') {
-          console.log(node.link);
-          window.open(node.link, '_blank');
+          console.log(this.checkLink(node.link));
+          window.open(this.checkLink(node.link), '_blank');
         }
       } else {
         this.refreshMap(event, node);
