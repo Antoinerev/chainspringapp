@@ -13,3 +13,34 @@
  */
 @import 'd3_network';
 @import 'users';
+
+.info-pan {
+  width: 10em;
+  height: 40em;
+  background-color: white;
+  padding: 1em;
+  position: absolute;
+  top: 10em;
+  left: 0;
+  .close-btn {
+    position: absolute;
+    right: 2px;
+    top: 2px;
+    cursor: pointer;
+  }
+}
+
+.slide-enter {
+  left: -10em;
+}
+.slide-enter-active {
+  transition: left 0.5s ease-out;
+  // left: 0;
+}
+.slide-leave {
+  // left: 0;
+}
+.slide-leave-active {
+  transition: left 0.5s ease-in;
+  left: -10em;
+}

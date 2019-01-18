@@ -34,8 +34,15 @@
       <button type="submit">Save</button>
     </form>
       <button v-if="user.id && user.id == nodes[0].object_id && nodes[0].object_type == 'User'" @click="switchAddKI">{{newKIButton}}</button>
+  <transition name="slide">
+    <div class="info-pan" v-show="showInfoPan">
+      <div @click="showInfoPan=false" class="close-btn">X</div>
+      <div>{{selectedKnowledgeItem.title}}</div>
+      <div><a :href="selectedKnowledgeItem.link" target='new'>external link</a></div>
+    </div>
+  </transition>
   </div>
-    <d3-network ref='net' :net-nodes="nodes" :net-links="links" :options="options"  @node-click="selectAction"/>
+    <d3-network ref='net' :net-nodes="nodes" :net-links="links" :options="options"  @node-click="toggleMenu"/>
   </div>
 </template>
 
@@ -55,7 +62,7 @@ export default {
       nodes:[],
       links: [],
       allKinds: {},
-      nodeSize:18,
+      // nodeSize:18,
       canvas:false,
       keyword: "",
       alternative_nodes: [],
@@ -68,15 +75,20 @@ export default {
         kind: '',
         time_needed: '',
         link: ''
-      }
+      },
+      selectedKnowledgeItem: {
+        title: 'default',
+        link: 'no link'
+      },
+      showInfoPan: false
     }
   },
   computed:{
     options(){
       return{
-        force: 2000,
-        size:{ w:1200, h:700},
-        nodeSize: this.nodeSize,
+        force: 4000,
+        size:{ w: window.innerWidth, h:700},
+        nodeSize: window.innerWidth * 0.04,
         nodeLabels: true,
         canvas: this.canvas
       }
@@ -137,14 +149,27 @@ export default {
           return response.data;
         });
     },
-    selectAction(event, node) {
+    // selectAction(event, node) {
+    //   if (node.object_type == 'KnowledgeItem') {
+    //     if (node.link != '') {
+    //       console.log(this.checkLink(node.link));
+    //       window.open(this.checkLink(node.link), '_blank');
+    //     }
+    //   } else {
+    //     this.refreshMap(event, node);
+    //   }
+    // },
+    toggleMenu(event, node) {
       if (node.object_type == 'KnowledgeItem') {
-        if (node.link != '') {
-          console.log(this.checkLink(node.link));
-          window.open(this.checkLink(node.link), '_blank');
-        }
+        console.log({node});
+        this.selectedKnowledgeItem = {
+          title: node.name,
+          link: node.link
+        };
+        this.showInfoPan = true;
       } else {
         this.refreshMap(event, node);
+        this.showInfoPan = false;
       }
     },
     refreshMap(event, node) {
@@ -209,4 +234,5 @@ export default {
 </script>
 
 <style scoped>
+
 </style>
