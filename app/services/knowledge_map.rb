@@ -22,15 +22,8 @@ class KnowledgeMap
       create_nodes(new_nodes_objects)
 
       new_nodes_objects = get_linked_users(@node_object).present? ? get_linked_users(@node_object) - @nodes_objects : []
-      if new_nodes_objects.present?
-        new_nodes_objects.each do |linked_user|
-          linked_user_node = Node.new(id: linked_user.id, type: linked_user.type, name: linked_user.name, _color: colors(:node, :linked_user))
-          link = { sid: node.id, tid: linked_user_node.id, _color: colors(:link, :secondary) }
-          @nodes << linked_user_node
-          @links << link
-        end
-        @nodes_objects += new_nodes_objects
-      end
+      create_linked_users_nodes(new_nodes_objects, @node_object)
+
       return {name: @node_object.name, nodes: @nodes, links: @links, allKinds: KnowledgeItem.kinds.keys}
     else
       return {name: "", nodes: @nodes, links: @links, message: "no record found"}
@@ -38,6 +31,17 @@ class KnowledgeMap
   end
 
   private
+  def create_linked_users_nodes(new_nodes_objects, node_of_origin)
+    if new_nodes_objects.present?
+      new_nodes_objects.each do |linked_user|
+        linked_user_node = Node.new(id: linked_user.id, type: linked_user.type, name: linked_user.name, _color: colors(:node, :linked_user))
+        link = { sid: node_of_origin.id, tid: linked_user_node.id, _color: colors(:link, :secondary) }
+        @nodes << linked_user_node
+        @links << link
+      end
+      @nodes_objects += new_nodes_objects
+    end
+  end
 
   def create_nodes(new_nodes_objects, data_type = 'descendants')
     if new_nodes_objects.present?
@@ -66,6 +70,11 @@ class KnowledgeMap
               @links << link
             end
             @nodes_objects += new_nodes_objects_desc
+          end
+
+          if node_object.type == "Domain"
+            new_nodes_objects = node_object.users.uniq - [@node_object]
+            create_linked_users_nodes(new_nodes_objects, node_object)
           end
         end
       end

@@ -15,8 +15,7 @@ Vue.component('app', App)
 
 
 
-document.addEventListener('turbolinks:load', () => {
-  const app = new Vue({
-    el: '[data-behavior="vue"]'
-  })
+const app = new Vue({
+  el: '[data-behavior="vue"]'
 })
+

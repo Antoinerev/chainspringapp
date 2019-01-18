@@ -1,9 +1,9 @@
 class User < ApplicationRecord
+  include ActiveModel::Serializers::JSON
   # Include default devise modules. Others available are:
   # :confirmable, :lockable, :timeoutable, :trackable and :omniauthable
   devise :database_authenticatable, :registerable,
          :recoverable, :rememberable, :validatable
-  include ActiveModel::Serializers::JSON
 
   has_many :knowledge_items
   has_many :domains, through: :knowledge_items

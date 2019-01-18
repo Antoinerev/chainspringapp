@@ -27,7 +27,7 @@
           {{ kind }}
         </option>
       </select>
-      <label>Time to allocate</label>
+      <label>Time to allocate (in minutes)</label>
       <input type="text" name="time_needed" v-model="newKnowledgeItem.time_needed" />
       <label>Link</label>
       <input type="text" name="link" v-model="newKnowledgeItem.link" />
