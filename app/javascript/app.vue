@@ -36,7 +36,7 @@
       <button v-if="user.id && user.id == nodes[0].object_id && nodes[0].object_type == 'User'" @click="switchAddKI">{{newKIButton}}</button>
   <transition name="slide">
     <div class="info-pan" v-show="showInfoPan">
-      <div @click="showInfoPan=false" class="close-btn">X</div>
+      <div @click="showInfoPan=false" class="close-btn">x</div>
       <div>{{selectedKnowledgeItem.title}}</div>
       <div><a :href="selectedKnowledgeItem.link" target='new'>external link</a></div>
     </div>

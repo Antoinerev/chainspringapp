@@ -15,8 +15,7 @@
 @import 'users';
 
 .info-pan {
-  width: 40vw;
-  min-width: 20em;
+  width: 20em;
   height: 40em;
   background-color: white;
   padding: 1em;
@@ -28,11 +27,19 @@
     right: 2px;
     top: 2px;
     cursor: pointer;
+    font-size: x-large;
+    border: thin solid gray;
+    border-radius: 50%;
+    width: 1em;
+    height: 1em;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 }
 
 .slide-enter {
-  left: -10em;
+  left: -20em;
 }
 .slide-enter-active {
   transition: left 0.5s ease-out;
@@ -43,5 +50,5 @@
 }
 .slide-leave-active {
   transition: left 0.5s ease-in;
-  left: -10em;
+  left: -20em;
 }
