@@ -4,7 +4,22 @@ class KnowledgeMap
   def initialize(node_object)
     @node_object = node_object
   end
+
+  def d3_network_initialize
+  end
   def build_v1
+    @depth_level = 3
+    user_map = d3_network_map_building
+    user_map[:build_version] = "v1"
+    return user_map
+  end
+  def build_v2
+    @depth_level = 2
+    user_map = d3_network_map_building
+    user_map[:build_version] = "v2"
+    return user_map
+  end
+  def d3_network_map_building
     @nodes_objects = []
     @nodes = []
     @links = []
@@ -52,33 +67,38 @@ class KnowledgeMap
         @nodes << new_node
         @links << link
 
-        unless data_type == 'ascendants'
-          new_nodes_objects_desc = node_object.descendants.present? ? node_object.descendants - @nodes_objects : []
-          if new_nodes_objects_desc.present?
-            new_nodes_objects_desc.each do |descendant2|
-              if descendant2.type == 'KnowledgeItem' && descendant2.user == @nodes_objects.first
-                node_color = colors(:node, node_key(descendant2))
-                link_color = colors(:link, :primary)
-              else
-                node_color = colors(:node, :secondary)
-                link_color = colors(:link, :secondary)
-              end
-              descendant2_node = Node.new(id: descendant2.id, type: descendant2.type, name: descendant2.name, _color: node_color,
-                link: link_from(descendant2))
-              link = { sid: new_node.id, tid: descendant2_node.id, _color: link_color }
-              @nodes << descendant2_node
-              @links << link
-            end
-            @nodes_objects += new_nodes_objects_desc
-          end
-
-          if node_object.type == "Domain"
-            new_nodes_objects = node_object.users.uniq - [@node_object]
-            create_linked_users_nodes(new_nodes_objects, node_object)
+        if @depth_level > 2
+          unless data_type == 'ascendants'
+            create_descendants_nodes(new_node, node_object)
           end
         end
       end
       @nodes_objects += new_nodes_objects
+    end
+  end
+  def create_descendants_nodes(new_node, node_object)
+    new_nodes_objects_desc = node_object.descendants.present? ? node_object.descendants - @nodes_objects : []
+    if new_nodes_objects_desc.present?
+      new_nodes_objects_desc.each do |descendant2|
+        if descendant2.type == 'KnowledgeItem' && descendant2.user == @nodes_objects.first
+          node_color = colors(:node, node_key(descendant2))
+          link_color = colors(:link, :primary)
+        else
+          node_color = colors(:node, :secondary)
+          link_color = colors(:link, :secondary)
+        end
+        descendant2_node = Node.new(id: descendant2.id, type: descendant2.type, name: descendant2.name, _color: node_color,
+          link: link_from(descendant2))
+        link = { sid: new_node.id, tid: descendant2_node.id, _color: link_color }
+        @nodes << descendant2_node
+        @links << link
+      end
+      @nodes_objects += new_nodes_objects_desc
+    end
+
+    if node_object.type == "Domain"
+      new_nodes_objects = node_object.users.uniq - [@node_object]
+      create_linked_users_nodes(new_nodes_objects, node_object)
     end
   end
   def node_key(node)

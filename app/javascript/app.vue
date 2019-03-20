@@ -55,9 +55,11 @@ export default {
     this.nodes = this.user.nodes;
     this.links = this.user.links;
     this.allKinds = this.user.allKinds;
+    this.build_version = this.user.build_version
   },
   data () {
     return {
+      api_version:"v1",
       name: "",
       nodes:[],
       links: [],
@@ -208,11 +210,12 @@ export default {
     getMapFromApi(object_id, object_type) {
       // console.log(object_id);
       // console.log(object_type);
-      var api_url = '/api/v1/map/build';
+      var api_url = `/api/${this.api_version}/map/build`;
       var requestParams = {
             params: {
               node_id: object_id,
-              node_class: object_type
+              node_class: object_type,
+              build_version: this.build_version
             }
           }
       this.$http

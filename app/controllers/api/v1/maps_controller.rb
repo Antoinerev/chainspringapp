@@ -4,7 +4,11 @@ class Api::V1::MapsController < Api::V1::BaseController
 
   def build_map
     set_node unless @node
-    map = KnowledgeMap.new(@node).build_v1
+    if params[:build_version]
+      map = KnowledgeMap.new(@node).send("build_#{params[:build_version]}")
+    else
+      map = KnowledgeMap.new(@node).build_v1
+    end
     response = {map: map, alternative_nodes: @nodes_array}
     render json: response
   end
