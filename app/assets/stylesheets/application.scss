@@ -14,7 +14,7 @@
 @import 'd3_network';
 @import 'users';
 
-.info-pan {
+.left-pan {
   width: 20em;
   height: 40em;
   background-color: white;
@@ -22,6 +22,9 @@
   position: absolute;
   top: 10em;
   left: 0;
+  border: thin solid grey;
+  border-radius: 0 1em 1em 0;
+  margin-left: -2px;
   .close-btn {
     position: absolute;
     right: 2px;

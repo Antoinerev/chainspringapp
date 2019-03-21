@@ -26,11 +26,19 @@ ul.menu li{
   position: relative;
 }
 .reference-form {
-  background-color: white;
-  border: thin solid grey;
-  border-radius: 1em;
+  // background-color: white;
+  // border: thin solid grey;
+  // border-radius: 1em;
   padding: 1em;
-  margin: 0.4em;
+  // margin: 0.4em;
+  display: flex;
+  flex-direction: column;
+  label {
+    margin-top: 1em;
+  }
+  button {
+    margin: 1.5em auto;
+  }
 }
 
 // .container {

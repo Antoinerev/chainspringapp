@@ -27,13 +27,22 @@ class Api::V1::MapsController < Api::V1::BaseController
     build_map
   end
 
-  def update
-    new_ki = KnowledgeItem.new(get_new_ki)
+  def create_ki
+    new_ki = KnowledgeItem.new(ki_params)
 
     if new_ki.save
       redirect_to user_path(@user), notice: "new KI saved"
     else
       redirect_to user_path(@user), alert: "new KI could not be saved"
+    end
+  end
+  def update_ki
+    edited_ki = KnowledgeItem.find(params[:newInfo][:object_id])
+
+    if edited_ki.update(ki_params)
+      redirect_to user_path(@user), notice: "new KI successfully edited"
+    else
+      redirect_to user_path(@user), alert: "KI modifications could not be saved"
     end
   end
 
@@ -43,9 +52,11 @@ class Api::V1::MapsController < Api::V1::BaseController
   def get_params
     @localization = params[:localization]
   end
-  def get_new_ki
+  def ki_params
     safe_params = params.require(:newInfo).permit(:user_id, :title, :kind, :link, :time_needed)
-    safe_params[:domain_id] = get_domain_id(params[:newInfo][:domain_name])
+    if params[:newInfo][:domain_name].present?
+      safe_params[:domain_id] = get_domain_id(params[:newInfo][:domain_name])
+    end
     return safe_params
   end
   def get_domain_id(domain_name)

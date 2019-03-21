@@ -1,47 +1,51 @@
 <template>
   <div id="app" >
-  <div class="title">
-    <h1>{{name}}</h1>
-  </div>
-  <div id="controls">
-    <a v-if="user.id" href="../users/sign_out" data-method="delete">log out</a>
-    <a v-else href="../users/sign_in">login</a>
-    <a v-if="user.id" href="/">Show my map</a>
-    <a href="/users">Choose demo user</a>
-    <form @submit.prevent="search(keyword)" id="search_form">
-      <input name="search" v-model="keyword"/>
-      <button type="submit">Search</button>
-      <transition name="fade">
-        <div v-if="flash.show" class="notice-msg">{{flash.text}}</div>
-      </transition>
-    </form>
-    <form v-if="addKI" @submit.prevent="addInfo(newKnowledgeItem)" id="add_form" class="reference-form">
-      <label>Topic Name</label>
-      <input type="text" name="domain" v-model="newKnowledgeItem.domain_name" />
-      <br>
-      <label>Reference: title</label>
-      <input type="text" name="title" v-model="newKnowledgeItem.title" />
-      <label>Kind</label>
-      <select v-model="newKnowledgeItem.kind">
-        <option v-for="kind in allKinds" v-bind:value="kind">
-          {{ kind }}
-        </option>
-      </select>
-      <label>Time to allocate (in minutes)</label>
-      <input type="text" name="time_needed" v-model="newKnowledgeItem.time_needed" />
-      <label>Link</label>
-      <input type="text" name="link" v-model="newKnowledgeItem.link" />
-      <button type="submit">Save</button>
-    </form>
-      <button v-if="user.id && user.id == nodes[0].object_id && nodes[0].object_type == 'User'" @click="switchAddKI">{{newKIButton}}</button>
-  <transition name="slide">
-    <div class="info-pan" v-show="showInfoPan">
-      <div @click="showInfoPan=false" class="close-btn">x</div>
-      <div>{{selectedKnowledgeItem.title}}</div>
-      <div><a :href="selectedKnowledgeItem.link" target='new'>external link</a></div>
+    <div class="title">
+      <h1>{{name}}</h1>
     </div>
-  </transition>
-  </div>
+    <div id="controls">
+      <a v-if="user.id" href="../users/sign_out" data-method="delete">log out</a>
+      <a v-else href="../users/sign_in">login</a>
+      <a v-if="user.id" href="/">Show my map</a>
+      <a href="/users">Choose demo user</a>
+      <form @submit.prevent="search(keyword)" id="search_form">
+        <input name="search" v-model="keyword"/>
+        <button type="submit">Search</button>
+        <transition name="fade">
+          <div v-if="flash.show" class="notice-msg">{{flash.text}}</div>
+        </transition>
+      </form>
+      <transition name="slide">
+        <form v-if="addKI || editKI" @submit.prevent="addInfo(newKnowledgeItem)" id="add_form" class="reference-form left-pan">
+          <label>Topic Name</label>
+          <input type="text" name="domain" v-model="newKnowledgeItem.domain_name" />
+          <label>Reference: title</label>
+          <input type="text" name="title" v-model="newKnowledgeItem.title" />
+          <label>Kind</label>
+          <select v-model="newKnowledgeItem.kind">
+            <option v-for="kind in allKinds" v-bind:value="kind">
+              {{ kind }}
+            </option>
+          </select>
+          <label>Time to allocate (in minutes)</label>
+          <input type="text" name="time_needed" v-model="newKnowledgeItem.time_needed" />
+          <label>Link</label>
+          <input type="text" name="link" v-model="newKnowledgeItem.link" />
+          <button type="submit">Save</button>
+        </form>
+      </transition>
+      <button v-if="currentUser" @click="switchAddKI">{{newKIButton}}</button>
+      <transition name="slide">
+        <div class="left-pan" v-show="showInfoPan">
+          <div @click="showInfoPan=false" class="close-btn">x</div>
+          <button v-if="currentUserItem" @click="switchEditKI">editKI</button>
+          <div>Title: {{selectedKnowledgeItem.title}}</div>
+          <div> Kind: {{selectedKnowledgeItem.kind}}</div>
+          <div>Time needed: {{selectedKnowledgeItem.time_needed}}</div>
+          <div><a :href="selectedKnowledgeItem.link" target='new'>external link</a></div>
+        </div>
+      </transition>
+    </div>
     <d3-network ref='net' :net-nodes="nodes" :net-links="links" :options="options"  @node-click="toggleMenu"/>
   </div>
 </template>
@@ -70,6 +74,7 @@ export default {
       alternative_nodes: [],
       flash: {text: "", show: false},
       addKI: false,
+      editKI: false,
       newKnowledgeItem: {
         user_id: '',
         domain_name: '',
@@ -78,8 +83,11 @@ export default {
         time_needed: '',
         link: ''
       },
+      selectedNode: {},
       selectedKnowledgeItem: {
         title: 'default',
+        kind: '',
+        time_needed: '',
         link: 'no link'
       },
       showInfoPan: false
@@ -101,11 +109,30 @@ export default {
       } else {
         return "Add reference"
       }
+    },
+    currentUser() {
+      // return  this.user.id && this.user.id == this.nodes[0].object_id && this.nodes[0].object_type == 'User'
+      return  this.user.id != null;
+    },
+    currentUserItem() {
+      return this.currentUser //&& this.nodes.includes(this.selectedNode)
     }
   },
   methods: {
     switchAddKI() {
       this.addKI = !this.addKI;
+      if (this.addKI == true) {
+        this.editKI = false;
+        this.newKnowledgeItem = this.nodes[0];
+      }
+    },
+    switchEditKI() {
+      this.editKI = !this.editKI;
+      if (this.editKI == true) {
+        this.addKI = false;
+        this.newKnowledgeItem = this.selectedKnowledgeItem;
+        this.showInfoPan = false;
+      }
     },
     addInfo(newInfo) {
       if(this.addKI) {
@@ -126,7 +153,21 @@ export default {
           }
         }
         this.links.push({sid: domainNode[0].id, tid: newKiNode.id});
-        this.sendUpdate(newInfo);
+        this.sendNewKI(newInfo);
+      } else if (this.editKI) {
+        if(newInfo.link != this.selectedNode.link) {
+          newInfo.link = this.checkLink(newInfo.link);
+        }
+
+        var editedKINode = this.nodes.find(node => {
+          return node == this.selectedNode;
+        });
+
+        editedKINode.title = newInfo.title;
+        editedKINode.kind = newInfo.kind;
+        editedKINode.time_needed = newInfo.time_needed;
+        editedKINode.link = newInfo.link;
+        this.sendEditKI(editedKINode);
       }
     },
     checkLink(link) {
@@ -136,11 +177,21 @@ export default {
         return link;
       }
     },
-    sendUpdate(newInfo) {
+    sendNewKI(newInfo) {
+
+      var api_url = '/api/v1/map/addki';
+      this.sendUpdate(newInfo, api_url);
+    },
+    sendEditKI(editedKINode) {
+
+      var api_url = '/api/v1/map/editki';
+      this.sendUpdate(editedKINode, api_url);
+    },
+    sendUpdate(newInfo, api_url) {
       // console.log({newInfo});
       newInfo.user_id = this.user.id;
-      console.log(newInfo);
-      var api_url = '/api/v1/map/update';
+      console.log({newInfo});
+
       var requestParams = {
               newInfo: newInfo
           }
@@ -163,9 +214,12 @@ export default {
     // },
     toggleMenu(event, node) {
       if (node.object_type == 'KnowledgeItem') {
-        console.log({node});
+        // console.log({node});
+        this.selectedNode = node;
         this.selectedKnowledgeItem = {
           title: node.name,
+          kind: node.kind,
+          time_needed: node.time_needed,
           link: node.link
         };
         this.showInfoPan = true;
