@@ -13,7 +13,7 @@
         </transition>
       </form>
       <transition name="slide">
-        <form v-if="addKI || editKI" @submit.prevent="addInfo(newKnowledgeItem)" id="add_form" class="reference-form left-pan">
+        <form v-if="addKI || editKI" @submit.prevent="addInfo(newKnowledgeItem), addKI=false, editKI=false" id="add_form" class="reference-form left-pan">
           <div @click="addKI=false, editKI=false" class="close-btn">x</div>
           <label>Topic Name</label>
           <input type="text" name="domain" v-model="newKnowledgeItem.domain_name" />
