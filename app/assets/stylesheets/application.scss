@@ -14,15 +14,21 @@
 @import 'd3_network';
 @import 'users';
 
+
+button {
+  background-color: white;
+  border-radius: 4px;
+}
 .left-pan {
   width: 20em;
-  height: 40em;
+  height: 25em;
   background-color: white;
+  box-shadow: 2px 2px 1px #F1F1F1;
   padding: 1em;
   position: absolute;
   top: 10em;
   left: 0;
-  border: thin solid grey;
+  // border: thin solid rgb(38, 164, 36);
   border-radius: 0 1em 1em 0;
   margin-left: -2px;
   .close-btn {
@@ -31,7 +37,7 @@
     top: 2px;
     cursor: pointer;
     font-size: x-large;
-    border: thin solid gray;
+    border: thin solid grey;
     border-radius: 50%;
     width: 1em;
     height: 1em;

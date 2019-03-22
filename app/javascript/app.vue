@@ -1,8 +1,5 @@
 <template>
   <div id="app" >
-    <div class="title">
-      <h1>{{name}}</h1>
-    </div>
     <div id="controls">
       <a v-if="user.id" href="../users/sign_out" data-method="delete">log out</a>
       <a v-else href="../users/sign_in">login</a>
@@ -17,6 +14,7 @@
       </form>
       <transition name="slide">
         <form v-if="addKI || editKI" @submit.prevent="addInfo(newKnowledgeItem)" id="add_form" class="reference-form left-pan">
+          <div @click="addKI=false, editKI=false" class="close-btn">x</div>
           <label>Topic Name</label>
           <input type="text" name="domain" v-model="newKnowledgeItem.domain_name" />
           <label>Reference: title</label>
@@ -97,8 +95,8 @@ export default {
     options(){
       return{
         force: 4000,
-        size:{ w: window.innerWidth, h:700},
-        nodeSize: window.innerWidth * 0.04,
+        size:{ w: window.innerWidth, h:innerHeight / 1.2},
+        nodeSize: 50,
         nodeLabels: true,
         canvas: this.canvas
       }
