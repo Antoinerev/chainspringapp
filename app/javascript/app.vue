@@ -124,6 +124,7 @@ export default {
       if (this.addKI == true) {
         this.editKI = false;
         this.newKnowledgeItem = this.nodes[0];
+        this.showInfoPan = false;
       }
     },
     switchEditKI() {
