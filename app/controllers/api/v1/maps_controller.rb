@@ -37,7 +37,8 @@ class Api::V1::MapsController < Api::V1::BaseController
     end
   end
   def update_ki
-    edited_ki = KnowledgeItem.find(params[:newInfo][:object_id])
+    user_kis = current_user.knowledge_items
+    edited_ki = user_kis.find(params[:newInfo][:object_id])
 
     if edited_ki.update(ki_params)
       redirect_to user_path(current_user), notice: "new KI successfully edited"
