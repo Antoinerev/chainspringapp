@@ -40,7 +40,10 @@
           <div>Title: {{selectedKnowledgeItem.title}}</div>
           <div> Kind: {{selectedKnowledgeItem.kind}}</div>
           <div>Time needed: {{selectedKnowledgeItem.time_needed}}</div>
-          <div><a :href="selectedKnowledgeItem.link" target='new'>external link</a></div>
+          <div>
+            <a v-if="selectedKnowledgeItem.link" :href="selectedKnowledgeItem.link" target='new'>external link</a>
+            <div v-else>No link</div>
+          </div>
         </div>
       </transition>
     </div>

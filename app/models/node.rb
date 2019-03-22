@@ -27,7 +27,7 @@ class Node
 
   def initialize(params)
     if params[:link].present?
-      @name = params[:name] + " - click on node for external link"
+      @name = params[:name]
     else
       @name = params[:name]
     end
