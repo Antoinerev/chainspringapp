@@ -3,7 +3,7 @@ class Node
   include ActiveModel::Serializers::JSON
   # include Rails.application.routes.url_helpers
 
-  attr_accessor :name, :_color, :object_id, :object_type, :link, :_cssClass #, :svgSym
+  attr_accessor :name, :_color, :object_id, :object_type, :link, :kind, :time_needed, :_cssClass #, :svgSym
   attr_reader :id
 
   validates_presence_of :name
@@ -18,6 +18,8 @@ class Node
       object_id: nil,
       object_type: nil,
       link: nil,
+      kind: nil,
+      time_needed: nil,
       # svgSym: nil
       _cssClass: nil
     }
@@ -33,6 +35,8 @@ class Node
     @object_id = params[:id]
     @object_type = params[:type]
     @link = params[:link] || ""
+    @kind = params[:kind] || ""
+    @time_needed = params[:time_needed] || ""
     @_cssClass = params[:link].present? ? 'ref-link' : ''
 
     if self.valid?

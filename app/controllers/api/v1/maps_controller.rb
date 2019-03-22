@@ -31,18 +31,18 @@ class Api::V1::MapsController < Api::V1::BaseController
     new_ki = KnowledgeItem.new(ki_params)
 
     if new_ki.save
-      redirect_to user_path(@user), notice: "new KI saved"
+      redirect_to user_path(current_user), notice: "new KI saved"
     else
-      redirect_to user_path(@user), alert: "new KI could not be saved"
+      redirect_to user_path(current_user), alert: "new KI could not be saved"
     end
   end
   def update_ki
     edited_ki = KnowledgeItem.find(params[:newInfo][:object_id])
 
     if edited_ki.update(ki_params)
-      redirect_to user_path(@user), notice: "new KI successfully edited"
+      redirect_to user_path(current_user), notice: "new KI successfully edited"
     else
-      redirect_to user_path(@user), alert: "KI modifications could not be saved"
+      redirect_to user_path(current_user), alert: "KI modifications could not be saved"
     end
   end
 

@@ -190,7 +190,7 @@ export default {
     sendUpdate(newInfo, api_url) {
       // console.log({newInfo});
       newInfo.user_id = this.user.id;
-      console.log({newInfo});
+      // console.log({newInfo});
 
       var requestParams = {
               newInfo: newInfo
