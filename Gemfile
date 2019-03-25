@@ -28,6 +28,9 @@ group :development, :test do
   gem 'byebug', platforms: [:mri, :mingw, :x64_mingw]
   gem 'pry-byebug'
   gem 'pry-rails'
+  gem 'rspec-rails', '~> 3.7'
+  gem 'capybara', '>= 2.15'
+  gem 'database_cleaner'
 end
 
 group :development do
@@ -41,7 +44,6 @@ end
 
 group :test do
 
-  gem 'capybara', '>= 2.15'
   gem 'selenium-webdriver'
 
   gem 'chromedriver-helper'

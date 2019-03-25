@@ -7,7 +7,6 @@ Rails.application.routes.draw do
 
   namespace :api, defaults: { format: :json } do
     namespace :v1 do
-      # resources :spaces, only: :index
       get 'map/build', to: 'maps#build_map'
       get 'map/search', to: 'maps#search'
       post 'map/addki', to: 'maps#create_ki'

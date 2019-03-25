@@ -3,6 +3,9 @@ class Api::V1::BaseController < ApplicationController
   rescue_from StandardError,                with: :internal_server_error
   rescue_from ActiveRecord::RecordNotFound, with: :not_found
 
+  def status
+    render json: {status: 'ok'}, status: :ok
+  end
   def not_found(exception)
     render json: { error: exception.message }, status: :not_found
   end

@@ -1,0 +1,2 @@
+class KnowledgeItemsController < ApplicationController
+end
