@@ -6,6 +6,8 @@ class Domain < ApplicationRecord
 
   after_initialize ->{capitalize('name')}
 
+  validates :name, uniqueness: { case_sensitive: :false }
+
   def attributes
     {
       id: nil,

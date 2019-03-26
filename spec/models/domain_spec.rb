@@ -9,5 +9,10 @@ RSpec.describe Domain, type: :model do
     it "can be created" do
       expect(@topic).to be_valid
     end
+
+    it "cannot be duplicated" do
+      @topic2 = FactoryBot.build(:topic)
+      expect(@topic2).to_not be_valid
+    end
   end
 end
