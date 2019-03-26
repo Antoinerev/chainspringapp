@@ -11,6 +11,10 @@ Rails.application.routes.draw do
       get 'map/search', to: 'maps#search'
       post 'map/addki', to: 'maps#create_ki'
       post 'map/editki', to: 'maps#update_ki'
+
+      resources :knowledge_items, path: "references", except: [:index, :show]
+
+      resources :domains, path: "topics", except: [:index, :show]
     end
   end
 end
