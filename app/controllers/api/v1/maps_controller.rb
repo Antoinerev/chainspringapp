@@ -15,11 +15,12 @@ class Api::V1::MapsController < Api::V1::BaseController
 
   def search
     if params[:keyword].present?
-      keyword = params[:keyword].capitalize
+      keyword = params[:keyword]
     @nodes_array = []
     begin
       puts keyword
-      nodes = Domain.where('name like ?', "%#{keyword}%").limit(6)
+      k = Domain.arel_table
+      nodes = Domain.where(k[:name].matches("%#{keyword}%")).limit(6)
       @nodes_array += nodes.to_a
       keyword = keyword[0...keyword.length - 1]
       break if keyword.length <= 1 || @nodes_array.length > 2
@@ -75,8 +76,10 @@ class Api::V1::MapsController < Api::V1::BaseController
     end
   end
   def compact_similar(domain)
-    similar_domains = Domain.where(name: domain.name)
-    if similar_domains.size > 1
+    k = Domain.arel_table
+    similar_domains = Domain.where(k[:name].matches(domain.name))
+    #domain not saved yet so if similar_domains.size > 0 one match already exists
+    if similar_domains.size > 0
 
       total_knowledge_items = similar_domains.map(&:knowledge_items).flatten
       domain = similar_domains.first

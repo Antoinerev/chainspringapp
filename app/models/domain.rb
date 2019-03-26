@@ -4,7 +4,7 @@ class Domain < ApplicationRecord
   has_many :knowledge_items
   has_many :users, through: :knowledge_items
 
-  after_initialize ->{capitalize('name')}
+  after_initialize ->{capitalize_all('name')}
 
   validates :name, uniqueness: { case_sensitive: :false }
 
