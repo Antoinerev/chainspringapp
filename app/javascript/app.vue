@@ -1,9 +1,9 @@
 <template>
   <div id="app" >
     <div id="controls">
-      <a v-if="user.id" href="../users/sign_out" data-method="delete">log out</a>
+      <a v-if="mapParams.user_id" href="../users/sign_out" data-method="delete">log out</a>
       <a v-else href="../users/sign_in">login</a>
-      <a v-if="user.id" href="/">Show my map</a>
+      <a v-if="mapParams.user_id" href="/">Show my map</a>
       <a href="/users">Choose demo user</a>
       <form @submit.prevent="search(keyword)" id="search_form">
         <input name="search" v-model="keyword"/>
@@ -54,13 +54,13 @@
 <script>
 
 export default {
-  props: ['d3-network', 'user'],
+  props: ['d3-network', 'map-params'],
   created() {
     // this.getMapFromApi()
-    this.nodes = this.user.nodes;
-    this.links = this.user.links;
-    this.allKinds = this.user.allKinds;
-    this.build_version = this.user.build_version
+    this.nodes = this.mapParams.nodes;
+    this.links = this.mapParams.links;
+    this.allKinds = this.mapParams.allKinds;
+    this.build_version = this.mapParams.build_version
   },
   data () {
     return {
@@ -99,7 +99,7 @@ export default {
       return{
         force: 4000,
         size:{ w: window.innerWidth, h:innerHeight / 1.2},
-        nodeSize: 50,
+        nodeSize: this.mapParams.nodesize,
         nodeLabels: true,
         canvas: this.canvas
       }
@@ -112,8 +112,7 @@ export default {
       }
     },
     currentUser() {
-      // return  this.user.id && this.user.id == this.nodes[0].object_id && this.nodes[0].object_type == 'User'
-      return  this.user.id != null;
+      return  this.mapParams.user_id != null;
     },
     currentUserItem() {
       return this.currentUser //&& this.nodes.includes(this.selectedNode)
@@ -191,7 +190,7 @@ export default {
     },
     sendUpdate(newInfo, api_url) {
       // console.log({newInfo});
-      newInfo.user_id = this.user.id;
+      newInfo.user_id = this.mapParams.user_id;
       // console.log({newInfo});
 
       var requestParams = {

@@ -10,13 +10,23 @@ class KnowledgeMap
   def build_v1
     @depth_level = 3
     user_map = d3_network_map_building
+    user_map[:nodesize] = 50
     user_map[:build_version] = "v1"
     return user_map
   end
   def build_v2
     @depth_level = 2
     user_map = d3_network_map_building
+    user_map[:nodesize] = 50
     user_map[:build_version] = "v2"
+    return user_map
+  end
+  def build_v3
+    @depth_level = 3
+    user_map = d3_network_map_building
+    user_map[:nodesize] = 100
+    user_map[:links] = []
+    user_map[:build_version] = "v3"
     return user_map
   end
   def d3_network_map_building

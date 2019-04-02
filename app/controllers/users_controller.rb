@@ -1,6 +1,6 @@
 class UsersController < ApplicationController
   # before_action :authenticate_user!, except: [:index, :show]
-  CURRENT_VERSION = "v2"
+  CURRENT_VERSION = "v3"
   def index
     @users = User.all
   end
@@ -13,8 +13,8 @@ class UsersController < ApplicationController
     else
       @user = User.first
     end
-    @user_map = KnowledgeMap.new(@user).send("build_#{CURRENT_VERSION}")
-    @user_map[:id] = current_user ? current_user.id : nil
+    @map_params = KnowledgeMap.new(@user).send("build_#{CURRENT_VERSION}")
+    @map_params[:user_id] = current_user ? current_user.id : nil
   end
 
   def new
