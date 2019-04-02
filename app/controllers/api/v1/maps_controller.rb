@@ -34,7 +34,7 @@ class Api::V1::MapsController < Api::V1::BaseController
 
   def create_ki
     new_ki = KnowledgeItem.new(ki_params)
-
+    new_ki.domains << @domain
     if new_ki.save
       redirect_to user_path(current_user), notice: "new KI saved"
     else
@@ -59,20 +59,23 @@ class Api::V1::MapsController < Api::V1::BaseController
     @localization = params[:localization]
   end
   def ki_params
+    # params = {newInfo: {title: "new test reference", user_id: @user.id,  domain_name: @topic.name}}
     safe_params = params.require(:newInfo).permit(:user_id, :title, :kind, :link, :time_needed)
     if params[:newInfo][:domain_name].present?
-      safe_params[:domain_id] = get_domain_id(params[:newInfo][:domain_name])
+      domain_name = params[:newInfo][:domain_name]
+    else
+      domain_name = "Undefined"
     end
+    get_domain(domain_name)
     return safe_params
   end
-  def get_domain_id(domain_name)
-    if domain_name
-      puts "domain_name : #{domain_name}"
+  def get_domain(domain_name)
+    if domain_name.present?
+      # puts "domain_name : #{domain_name}"
       domain = Domain.new(name: domain_name)
-      domain = compact_similar(domain)
-      return domain.id
+      @domain = compact_similar(domain)
     else
-      return nil
+      @domain = Domain.find_or_create_by(name: "Undefined")
     end
   end
   def compact_similar(domain)
@@ -84,12 +87,16 @@ class Api::V1::MapsController < Api::V1::BaseController
       total_knowledge_items = similar_domains.map(&:knowledge_items).flatten
       domain = similar_domains.first
       similar_domains -= [domain]
-      similar_domains.each do |redondant_domain|
-        redondant_domain.knowledge_items.each{|ki| ki.update(domain_id: domain.id)}
-
-      end
-      if domain.knowledge_items.count == total_knowledge_items.count
-        similar_domains.each{|domain| domain.delete}
+      if similar_domains.count > 0
+        similar_domains.each do |redondant_domain|
+          redondant_domain.knowledge_items.each do |ki|
+            ki.domains << domain
+            ki.domains -= [redondant_domain]
+          end
+        end
+        if domain.knowledge_items.count == total_knowledge_items.count
+          similar_domains.each{|domain| domain.delete}
+        end
       end
     end
     domain.save

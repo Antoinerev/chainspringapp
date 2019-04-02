@@ -23,7 +23,7 @@ RSpec.describe 'References requests' do
       post(api_v1_map_addki_path(params))
       new_ki = KnowledgeItem.last
       expect(new_ki.title.capitalize).to eql(params[:newInfo][:title].capitalize)
-      expect(new_ki.domain.name.capitalize).to eql(new_topic_name.capitalize)
+      expect(new_ki.domains.last.name.capitalize).to eql(new_topic_name.capitalize)
       expect(Domain.count).to eql(topics_nb + 1)
     end
 

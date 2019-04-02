@@ -20,7 +20,9 @@ class User < ApplicationRecord
       # domains_list: nil
     }
   end
-
+  def kis
+    self.knowledge_items
+  end
   def domains_list
     self.domains.distinct.pluck(:name)
   end

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2018_11_14_154804) do
+ActiveRecord::Schema.define(version: 2019_04_02_103729) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -21,8 +21,16 @@ ActiveRecord::Schema.define(version: 2018_11_14_154804) do
     t.datetime "updated_at", null: false
   end
 
-  create_table "knowledge_items", force: :cascade do |t|
+  create_table "knowledge_item_domains", force: :cascade do |t|
+    t.bigint "knowledge_item_id"
     t.bigint "domain_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["domain_id"], name: "index_knowledge_item_domains_on_domain_id"
+    t.index ["knowledge_item_id"], name: "index_knowledge_item_domains_on_knowledge_item_id"
+  end
+
+  create_table "knowledge_items", force: :cascade do |t|
     t.bigint "user_id"
     t.integer "kind"
     t.integer "time_needed"
@@ -30,7 +38,6 @@ ActiveRecord::Schema.define(version: 2018_11_14_154804) do
     t.datetime "updated_at", null: false
     t.string "title"
     t.string "link"
-    t.index ["domain_id"], name: "index_knowledge_items_on_domain_id"
     t.index ["user_id"], name: "index_knowledge_items_on_user_id"
   end
 
@@ -47,6 +54,7 @@ ActiveRecord::Schema.define(version: 2018_11_14_154804) do
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
   end
 
-  add_foreign_key "knowledge_items", "domains"
+  add_foreign_key "knowledge_item_domains", "domains"
+  add_foreign_key "knowledge_item_domains", "knowledge_items"
   add_foreign_key "knowledge_items", "users"
 end

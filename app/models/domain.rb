@@ -1,7 +1,8 @@
 class Domain < ApplicationRecord
   include ActiveModel::Serializers::JSON
 
-  has_many :knowledge_items
+  has_many :knowledge_item_domains
+  has_many :knowledge_items, through: :knowledge_item_domains
   has_many :users, through: :knowledge_items
 
   after_initialize ->{capitalize_all('name')}
