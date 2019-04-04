@@ -56,11 +56,12 @@
 export default {
   props: ['d3-network', 'map-params'],
   created() {
-    // this.getMapFromApi()
-    this.nodes = this.mapParams.nodes;
-    this.links = this.mapParams.links;
+    this.allNodes = this.mapParams.nodes;
+    this.allLinks = this.mapParams.links;
+    this.links = this.allLinks;
     this.allKinds = this.mapParams.allKinds;
-    this.build_version = this.mapParams.build_version
+    this.build_version = this.mapParams.build_version;
+    this.setInitialMap();
   },
   data () {
     return {
@@ -69,7 +70,6 @@ export default {
       nodes:[],
       links: [],
       allKinds: {},
-      // nodeSize:18,
       canvas:false,
       keyword: "",
       alternative_nodes: [],
@@ -101,7 +101,10 @@ export default {
         size:{ w: window.innerWidth, h:innerHeight / 1.2},
         nodeSize: this.mapParams.nodesize,
         nodeLabels: true,
-        canvas: this.canvas
+        canvas: this.canvas,
+        strLinks: true
+        // offset: {x: 150, y: 150},
+        // noNodes: true
       }
     },
     newKIButton() {
@@ -189,9 +192,7 @@ export default {
       this.sendUpdate(editedKINode, api_url);
     },
     sendUpdate(newInfo, api_url) {
-      // console.log({newInfo});
       newInfo.user_id = this.mapParams.user_id;
-      // console.log({newInfo});
 
       var requestParams = {
               newInfo: newInfo
@@ -199,7 +200,6 @@ export default {
       this.$http
         .post(api_url, requestParams)
         .then(response => {
-          // console.log({response});
           return response.data;
         });
     },
@@ -215,7 +215,6 @@ export default {
     // },
     toggleMenu(event, node) {
       if (node.object_type == 'KnowledgeItem') {
-        // console.log({node});
         this.selectedNode = node;
         this.selectedKnowledgeItem = {
           title: node.name,
@@ -229,11 +228,39 @@ export default {
         this.showInfoPan = false;
       }
     },
+    setInitialMap() {
+      let node = this.allNodes[0];
+      let descendantLinks = this.allLinks.filter(link => link.sid == node.id);
+      let descendantNodes = [];
+      descendantLinks.forEach(link => {
+        descendantNodes = descendantNodes.concat(this.allNodes.filter(node => node.id == link.tid));
+      });
+      this.nodes = descendantNodes;
+      this.nodes.unshift(node);
+      this.links = descendantLinks;
+    },
     refreshMap(event, node) {
-      this.getMapFromApi(node.object_id, node.object_type)
+      this.remapFromMemory(node);
+    },
+    remapFromMemory(node) {
+      // let ascendantLinks = this.allLinks.filter(link => link.tid == node.id);
+      // if (ascendantLinks.length == 0) {
+      //   this.getMapFromApi(node.object_id, node.object_type);
+      // } else {
+        // let ascendantNodes = this.allNodes.filter(node => node.id == ascendantLinks[0].sid);
+        let descendantLinks = this.allLinks.filter(link => link.sid == node.id);
+        let descendantNodes = []
+        descendantLinks.forEach(link => {
+          descendantNodes = descendantNodes.concat(this.allNodes.filter(node => node.id == link.tid));
+        });
+        // sets base nodes and links
+        this.setInitialMap();
+        this.nodes = this.nodes.concat(descendantNodes);
+        // this.nodes.unshift(node);
+        this.links = this.links.concat(descendantLinks);
+      // }
     },
     search(keyword) {
-      // console.log({keyword});
       var api_url = '/api/v1/map/search';
       var requestParams = {
             params: {
@@ -243,7 +270,6 @@ export default {
       this.$http
         .get(api_url, requestParams)
         .then(response => {
-          // console.log({response});
           return response.data;
         })
         .then(data => {
@@ -263,8 +289,6 @@ export default {
       window.scrollTo(0,1000);
     },
     getMapFromApi(object_id, object_type) {
-      // console.log(object_id);
-      // console.log(object_type);
       var api_url = `/api/${this.api_version}/map/build`;
       var requestParams = {
             params: {
@@ -276,7 +300,6 @@ export default {
       this.$http
         .get(api_url, requestParams)
         .then(response => {
-          // console.log({response});
           return response.data;
         })
         .then(data => {
