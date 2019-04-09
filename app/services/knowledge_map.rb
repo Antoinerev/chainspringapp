@@ -50,32 +50,43 @@ class KnowledgeMap
       create_nodes(new_nodes_objects)
 
       new_nodes_objects = get_linked_users(@node_object).present? ? get_linked_users(@node_object) - @nodes_objects : []
-      create_linked_users_nodes(new_nodes_objects, @node_object)
+      create_linked_users_nodes(new_nodes_objects, @node)
 
-      return {name: @node_object.name, nodes: @nodes, links: @links, allKinds: KnowledgeItem.kinds.keys}
+      return {name: @node_object.name, nodes: @nodes, links: @links.uniq, allKinds: KnowledgeItem.kinds.keys}
     else
-      return {name: "", nodes: @nodes, links: @links, message: "no record found"}
+      return {name: "", nodes: @nodes, links: @links.uniq, message: "no record found"}
     end
   end
 
   private
-  def build_node(node_object)
+  def build_node(node_object, options: {color_key: :primary, link_from: nil})
+    color_key = options[:color_key]
+    link_from = options[:link_from]
+    if color_key == :primary
+      node_color = colors(:node, node_key(node_object))
+    else
+      node_color = colors(:node, color_key)
+    end
     if node_object.type == "KnowledgeItem"
       # details in addition to basic node
-      return Node.new(id: node_object.id, type: node_object.type, name: node_object.name, kind: kind_from(node_object), _color: colors(:node, node_key(node_object)),
-          link: link_from(node_object), time_needed: node_object.time_needed)
+      link_origin = link_from.present? ? link_from : node_object
+
+      return Node.new(id: node_object.id, type: node_object.type, name: node_object.name, kind: kind_from(node_object), _color: node_color,
+          link: link_from(link_origin), time_needed: node_object.time_needed, topics: node_object.domain_names)
     else
       # Basic node
-      return Node.new(id: node_object.id, type: node_object.type, name: node_object.name, _color: colors(:node, node_key(node_object)))
+      return Node.new(id: node_object.id, type: node_object.type, name: node_object.name, _color: node_color)
     end
   end
   def create_linked_users_nodes(new_nodes_objects, node_of_origin)
     if new_nodes_objects.present?
       new_nodes_objects.each do |linked_user|
         linked_user_node = build_node(linked_user)
-        link = { sid: node_of_origin.id, tid: linked_user_node.id, _color: colors(:link, :secondary) }
-        @nodes << linked_user_node
-        @links << link
+        if node_of_origin.type == "Node"
+          link = { sid: node_of_origin.id, tid: linked_user_node.id}
+          @nodes << linked_user_node
+          @links << link
+        end
       end
       @nodes_objects += new_nodes_objects
     end
@@ -88,14 +99,13 @@ class KnowledgeMap
         link = { sid: @node.id, tid: new_node.id }
         @nodes << new_node
         @links << link
-
+        @nodes_objects << node_object
         if @depth_level > 2
           unless data_type == 'ascendants'
             create_descendants_nodes(new_node, node_object)
           end
         end
       end
-      @nodes_objects += new_nodes_objects
     end
   end
   def create_descendants_nodes(new_node, node_object)
@@ -103,24 +113,44 @@ class KnowledgeMap
     if new_nodes_objects_desc.present?
       new_nodes_objects_desc.each do |descendant2|
         if descendant2.type == 'KnowledgeItem' && descendant2.user == @nodes_objects.first
-          node_color = colors(:node, node_key(descendant2))
-          link_color = colors(:link, :primary)
+          color_key = :primary
         else
-          node_color = colors(:node, :secondary)
-          link_color = colors(:link, :secondary)
+          color_key = :secondary
         end
-        descendant2_node = Node.new(id: descendant2.id, type: descendant2.type, name: descendant2.name, kind: kind_from(node_object), _color: node_color,
-          link: link_from(descendant2))
-        link = { sid: new_node.id, tid: descendant2_node.id, _color: link_color }
+        descendant2_node = build_node(descendant2, options: {color_key: color_key})
+        link = { sid: new_node.id, tid: descendant2_node.id }
         @nodes << descendant2_node
         @links << link
+        @nodes_objects << descendant2
+        # looking for other topics/domains associated with the reference
+        if descendant2.type == "KnowledgeItem"
+          # additional domain than the one that led to this reference
+          if descendant2.ascendants.count > 1
+            new_nodes_objects_alt = descendant2.ascendants.present? ? descendant2.ascendants - @nodes_objects : []
+            # new node (ie not already in the map)
+            descendant2.ascendants.each do |ascendant_topic|
+              # add node & add link
+              color_key = :secondary
+              p " ascendant_topic.id : #{ascendant_topic.id}"
+              ascendant_topic_node = @nodes.find{|node| node.object_id == ascendant_topic.id}
+              if ascendant_topic_node.present?
+                # ascendant_topic_node = @nodes.find{|node| node.object_id == ascendant_topic.id}
+              else
+                ascendant_topic_node = build_node(ascendant_topic, options: {color_key: color_key})
+                @nodes << ascendant_topic_node
+                @nodes_objects << ascendant_topic
+              end
+              link = { sid: ascendant_topic_node.id, tid: descendant2_node.id }
+              @links << link
+            end
+          end
+        end
       end
-      @nodes_objects += new_nodes_objects_desc
     end
 
     if node_object.type == "Domain"
       new_nodes_objects = node_object.users.uniq - [@node_object]
-      create_linked_users_nodes(new_nodes_objects, node_object)
+      create_linked_users_nodes(new_nodes_objects, new_node)
     end
   end
   def node_key(node)

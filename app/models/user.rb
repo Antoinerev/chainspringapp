@@ -17,13 +17,13 @@ class User < ApplicationRecord
       ascendants_type: nil
       # descendants: nil,
       # descendants_type: nil,
-      # domains_list: nil
+      # domain_names: nil
     }
   end
   def kis
     self.knowledge_items
   end
-  def domains_list
+  def domain_names
     self.domains.distinct.pluck(:name)
   end
   def type

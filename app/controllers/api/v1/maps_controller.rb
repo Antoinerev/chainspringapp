@@ -55,9 +55,9 @@ class Api::V1::MapsController < Api::V1::BaseController
 
   private
 
-  def get_params
-    @localization = params[:localization]
-  end
+  # def get_params
+  #   @localization = params[:localization]
+  # end
   def ki_params
     # params = {newInfo: {title: "new test reference", user_id: @user.id,  domain_name: @topic.name}}
     safe_params = params.require(:newInfo).permit(:user_id, :title, :kind, :link, :time_needed)

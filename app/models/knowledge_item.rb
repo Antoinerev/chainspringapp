@@ -9,17 +9,18 @@ class KnowledgeItem < ApplicationRecord
 
   after_initialize ->{capitalize_all('title')}
 
-  # def attributes
-  #   {
-  #     id: nil,
-  #     name: nil,
-  #     type: nil
-  #     # ascendants: nil,
-  #     # ascendants_type: nil,
-  #     # descendants: nil,
-  #     # descendants_type: nil
-  #   }
-  # end
+  def attributes
+    {
+      id: nil,
+      name: nil,
+      type: nil,
+      domain_names: nil
+      # ascendants: nil,
+      # ascendants_type: nil,
+      # descendants: nil,
+      # descendants_type: nil
+    }
+  end
 
   def name
     self.title
@@ -32,5 +33,8 @@ class KnowledgeItem < ApplicationRecord
   end
   def descendants
     nil
+  end
+  def domain_names
+    self.domains.distinct.pluck(:name).to_sentence
   end
 end

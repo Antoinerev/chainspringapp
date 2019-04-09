@@ -40,6 +40,7 @@
           <div>Title: {{selectedKnowledgeItem.title}}</div>
           <div> Kind: {{selectedKnowledgeItem.kind}}</div>
           <div>Time needed: {{selectedKnowledgeItem.time_needed}}</div>
+          <div>Topics: {{selectedKnowledgeItem.topics}}</div>
           <div>
             <a v-if="selectedKnowledgeItem.link" :href="selectedKnowledgeItem.link" target='new'>external link</a>
             <div v-else>No link</div>
@@ -62,6 +63,7 @@ export default {
     this.allKinds = this.mapParams.allKinds;
     this.build_version = this.mapParams.build_version;
     this.setInitialMap();
+    // this.nodes = this.allNodes;
   },
   data () {
     return {
@@ -89,7 +91,8 @@ export default {
         title: 'default',
         kind: '',
         time_needed: '',
-        link: 'no link'
+        link: 'no link',
+        topics: ''
       },
       showInfoPan: false
     }
@@ -220,7 +223,8 @@ export default {
           title: node.name,
           kind: node.kind,
           time_needed: node.time_needed,
-          link: node.link
+          link: node.link,
+          topics: node.topics
         };
         this.showInfoPan = true;
       } else {
