@@ -1,19 +1,7 @@
 <template>
   <div id="app" >
-    <div id="controls">
-      <a v-if="mapParams.user_id" href="../users/sign_out" data-method="delete">log out</a>
-      <a v-else href="../users/sign_in">login</a>
-      <a v-if="mapParams.user_id" href="/">Show my map</a>
-      <a href="/users">Choose demo user</a>
-      <form @submit.prevent="search(keyword)" id="search_form">
-        <input name="search" v-model="keyword"/>
-        <button type="submit">Search</button>
-        <transition name="fade">
-          <div v-if="flash.show" class="notice-msg">{{flash.text}}</div>
-        </transition>
-      </form>
       <transition name="slide">
-        <form v-if="addKI || editKI" @submit.prevent="addInfo(newKnowledgeItem), addKI=false, editKI=false" id="add_form" class="reference-form left-pan">
+        <form class="reference-form left-pan" v-if="addKI || editKI" @submit.prevent="addInfo(newKnowledgeItem), addKI=false, editKI=false" id="add_form">
           <div @click="addKI=false, editKI=false" class="close-btn">x</div>
           <label>Topic Name</label>
           <input type="text" name="domain" v-model="newKnowledgeItem.domain_name" />
@@ -32,7 +20,6 @@
           <button type="submit">Save</button>
         </form>
       </transition>
-      <button v-if="currentUser" @click="switchAddKI">{{newKIButton}}</button>
       <transition name="slide">
         <div class="left-pan" v-show="showInfoPan">
           <div @click="showInfoPan=false" class="close-btn">x</div>
@@ -47,6 +34,19 @@
           </div>
         </div>
       </transition>
+    <div id="controls">
+      <a v-if="mapParams.user_id" href="../users/sign_out" data-method="delete">log out</a>
+      <a v-else href="../users/sign_in">login</a>
+      <a v-if="mapParams.user_id" href="/">Show my map</a>
+      <a href="/users">Choose demo user</a>
+      <form @submit.prevent="search(keyword)" id="search_form">
+        <input name="search" v-model="keyword"/>
+        <button type="submit">Search</button>
+        <transition name="fade">
+          <div v-if="flash.show" class="notice-msg">{{flash.text}}</div>
+        </transition>
+      </form>
+      <button v-if="currentUser" @click="switchAddKI">{{newKIButton}}</button>
     </div>
     <d3-network ref='net' :net-nodes="nodes" :net-links="links" :options="options"  @node-click="toggleMenu"/>
   </div>
@@ -57,18 +57,34 @@
 export default {
   props: ['d3-network', 'map-params'],
   created() {
-    this.allNodes = this.mapParams.nodes;
-    this.allLinks = this.mapParams.links;
-    this.links = this.allLinks;
+    this.initialNodes = this.mapParams.nodes;
+    this.initialLinks = this.mapParams.links;
     this.allKinds = this.mapParams.allKinds;
     this.build_version = this.mapParams.build_version;
-    this.setInitialMap();
-    // this.nodes = this.allNodes;
+    // this.setInitialMap();
+    this.nodes = this.initialNodes;
+    this.links = this.initialLinks;
+
+    // // Static test example
+    // this.nodes = [
+    //   {name: 'test', id: 'u_1', _color: '#26a424'},
+    //   {name: 'topic 1', id: 't_1', _color: '#fc770a'},
+    //   {name: 'ref 1', id: 'r_1', _color: '#42c4ef'},
+    //   {name: 'topic 2', id: 't_2', _color: '#fc770a'}
+    // ];
+    // this.links = [
+    // {id: 'l_1', sid: 'u_1', tid: 't_1'},
+    // {id: 'l_2', sid: 't_1', tid: 'r_1'},
+    // {id: 'l_3', sid: 'u_1', tid: 't_2'},
+    // {id: 'l_4', sid: 'r_1', tid: 't_2'}
+    // ];
   },
   data () {
     return {
       api_version:"v1",
       name: "",
+      initialNodes: [],
+      initialLinks: [],
       nodes:[],
       links: [],
       allKinds: {},
@@ -94,19 +110,27 @@ export default {
         link: 'no link',
         topics: ''
       },
-      showInfoPan: false
+      showInfoPan: false,
+      savedColor: ''
     }
   },
   computed:{
     options(){
       return{
-        force: 4000,
-        size:{ w: window.innerWidth, h:innerHeight / 1.2},
-        nodeSize: this.mapParams.nodesize,
+        force: 2000,
+        forces:{
+          Center: false,
+          X: 0.5,
+          Y: 0.1,
+          ManyBody: true,
+          Link: true
+        },
+        // size:{ w: window.innerWidth, h:innerHeight * 2},
+        nodeSize: this.mapParams.nodesize / 1,
         nodeLabels: true,
         canvas: this.canvas,
+        // offset: {x: 0, y: - innerHeight/2},
         strLinks: true
-        // offset: {x: 150, y: 150},
         // noNodes: true
       }
     },
@@ -217,8 +241,8 @@ export default {
     //   }
     // },
     toggleMenu(event, node) {
+      this.selectNode(node);
       if (node.object_type == 'KnowledgeItem') {
-        this.selectedNode = node;
         this.selectedKnowledgeItem = {
           title: node.name,
           kind: node.kind,
@@ -232,36 +256,71 @@ export default {
         this.showInfoPan = false;
       }
     },
+    selectNode(node) {
+      if(this.selectedNode.id) {
+        this.selectedNode["_color"] = this.savedColor;
+      }
+      this.savedColor = node["_color"];
+      node["_color"] = '#FF0000';
+      this.selectedNode = node;
+    },
     setInitialMap() {
-      let node = this.allNodes[0];
-      let descendantLinks = this.allLinks.filter(link => link.sid == node.id);
+      let node = this.initialNodes[0];
+      let descendantLinks = this.initialLinks.filter(link => link.sid == node.id);
       let descendantNodes = [];
       descendantLinks.forEach(link => {
-        descendantNodes = descendantNodes.concat(this.allNodes.filter(node => node.id == link.tid));
+        descendantNodes = descendantNodes.concat(this.initialNodes.filter(node => node.id == link.tid));
       });
       this.nodes = descendantNodes;
       this.nodes.unshift(node);
       this.links = descendantLinks;
     },
     refreshMap(event, node) {
-      this.remapFromMemory(node);
+      if(this.links.filter(link => link.sid == node.id).length > 0) {
+        console.log('api call');
+        this.updateMapFromApi(node.id, node.object_type);
+      } else {
+        console.log('refresh from cache');
+        this.remapFromMemory(node);
+      }
     },
     remapFromMemory(node) {
-      // let ascendantLinks = this.allLinks.filter(link => link.tid == node.id);
-      // if (ascendantLinks.length == 0) {
-      //   this.getMapFromApi(node.object_id, node.object_type);
-      // } else {
-        // let ascendantNodes = this.allNodes.filter(node => node.id == ascendantLinks[0].sid);
-        let descendantLinks = this.allLinks.filter(link => link.sid == node.id);
-        let descendantNodes = []
+        let descendantLinks = [];
+        let remainingLinks = [];
+        let descendantNodes = [];
+        let remainingNodes = [];
+        let descendantLinks2 = [];
+        let descendantNodes2 = [];
+        // gets nodes directly linked to origin node
+        this.initialLinks.forEach(link => {
+          if(link.sid == node.id) {
+            descendantLinks.push(link);
+          } else {
+            remainingLinks.push(link);
+          }
+        });
         descendantLinks.forEach(link => {
-          descendantNodes = descendantNodes.concat(this.allNodes.filter(node => node.id == link.tid));
+          this.initialNodes.forEach(node => {
+            if(node.id == link.tid) {
+              descendantNodes.push(node);
+            } else {
+              remainingNodes.push(node);
+            }
+          });
+        });
+        // gets links from 2nd degree nodes
+        descendantNodes.forEach(node => {
+          descendantLinks2 = descendantLinks2.concat(remainingLinks.filter(link => node.id == link.tid));
+        });
+        // gets nodes of 3rd degree
+        descendantLinks2.forEach(link => {
+          descendantNodes2 = descendantNodes2.concat(remainingNodes.filter(node => node.id == link.sid ));
         });
         // sets base nodes and links
         this.setInitialMap();
-        this.nodes = this.nodes.concat(descendantNodes);
+        this.nodes = this.nodes.concat(descendantNodes).concat(descendantNodes2);
         // this.nodes.unshift(node);
-        this.links = this.links.concat(descendantLinks);
+        this.links = this.links.concat(descendantLinks).concat(descendantLinks2);
       // }
     },
     search(keyword) {
@@ -292,11 +351,11 @@ export default {
         });
       window.scrollTo(0,1000);
     },
-    getMapFromApi(object_id, object_type) {
+    updateMapFromApi(node_id, object_type) {
       var api_url = `/api/${this.api_version}/map/build`;
       var requestParams = {
             params: {
-              node_id: object_id,
+              node_id: node_id.split('_')[1],
               node_class: object_type,
               build_version: this.build_version
             }
@@ -308,11 +367,34 @@ export default {
         })
         .then(data => {
           this.name = data.map.name;
-          this.nodes = data.map.nodes;
-          this.links = data.map.links;
+          this.setInitialMap()
+          this.addNodeIfNew(data.map.nodes);
+          this.addLinkIfNew(data.map.links);
           this.alternative_nodes = data.alternative_nodes;
         });
-      window.scrollTo(0,1000);
+      // window.scrollTo(0,1000);
+    },
+    addNodeIfNew(nodes) {
+      // let node_ids = this.nodes.map(node => node.id);
+      let node_ids = this.initialNodes.map(node => node.id);
+      let refreshedNodes = [];
+      nodes.forEach(node => {
+        if(!node_ids.includes(node.id)) {
+          refreshedNodes.push(node);
+        }
+      });
+      this.nodes = this.initialNodes.concat(refreshedNodes);
+    },
+    addLinkIfNew(links) {
+      // let link_ids = this.links.map(link => link.id);
+      let link_ids = this.initialLinks.map(link => link.id);
+      let refreshedLinks = [];
+      links.forEach(link => {
+        if(!link_ids.includes(link.id)) {
+          refreshedLinks.push(link);
+        }
+      });
+      this.links = this.initialLinks.concat(refreshedLinks);
     }
   }
 }

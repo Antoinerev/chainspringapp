@@ -43,7 +43,7 @@ class User < ApplicationRecord
     descendants.as_json
   end
   def kis_list
-    knowledge_items.as_json
+    super
   end
   def nodes
     user_node_array = [self.node]

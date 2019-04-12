@@ -42,7 +42,7 @@ class Domain < ApplicationRecord
     "#fc770a"
   end
   def kis_list
-    knowledge_items.as_json
+    super
   end
   def users_list
     users.collect(&:node)

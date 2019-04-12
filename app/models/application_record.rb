@@ -13,4 +13,12 @@ class ApplicationRecord < ActiveRecord::Base
       self[attribute] = capitalized_attribute
     end
   end
+  def kis_list
+    nodes = knowledge_items.as_json
+    nodes.each do |node|
+      id = node.delete(:map_id)
+      node[:id] = id if id
+    end
+    return nodes
+  end
 end
