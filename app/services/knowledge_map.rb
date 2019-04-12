@@ -11,22 +11,46 @@ class KnowledgeMap
     @depth_level = 3
     user_map = d3_network_map_building
     user_map[:nodesize] = 50
-    user_map[:build_version] = "v1"
+    user_map[:build_version] = __method__.to_s.split(/_/).last
     return user_map
   end
   def build_v2
     @depth_level = 2
     user_map = d3_network_map_building
     user_map[:nodesize] = 50
-    user_map[:build_version] = "v2"
+    user_map[:build_version] = __method__.to_s.split(/_/).last
     return user_map
   end
   def build_v3
     @depth_level = 3
     user_map = d3_network_map_building
     user_map[:nodesize] = 75
-    user_map[:build_version] = "v3"
+    user_map[:build_version] = __method__.to_s.split(/_/).last
     return user_map
+  end
+  def build_v4
+    @depth_level = 3
+    user_map = d3_network_map_building_v2
+    user_map[:nodesize] = 75
+    user_map[:build_version] = __method__.to_s.split(/_/).last
+    return user_map
+  end
+  def d3_network_map_building_v2
+    if @node_object
+      if @node_object.type == 'User'
+        user_json = @node_object.as_json
+        @nodes = user_json[:nodes]
+        @links = user_json[:links]
+      elsif @node_object.type == 'Domain'
+        ki_nodes = @node_object.kis_list.each{|node| node["_color"] = "#89C4D9"}
+        user_nodes = @node_object.users_list.each{|node| node["_color"] = "#6BAE35"}
+        @nodes = user_nodes + ki_nodes
+        @links = @node_object.links
+      end
+      return {name: @node_object.name, nodes: @nodes, links: @links.uniq, allKinds: KnowledgeItem.kinds.keys}
+    else
+      return {name: "", nodes: [], links: [], message: "no record found"}
+    end
   end
   def d3_network_map_building
     @nodes_objects = []
@@ -173,7 +197,7 @@ class KnowledgeMap
         user: '#26a424',
         linked_user: '#B3D5B2',
         domain: '#fc770a',
-        knowledge_item: '#42c4ef',
+        knowledge_item: '#42C4EF',
         secondary: '#B3D5B2'
       },
       link:

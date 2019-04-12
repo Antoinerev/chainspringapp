@@ -1,6 +1,6 @@
 class UsersController < ApplicationController
   # before_action :authenticate_user!, except: [:index, :show]
-  CURRENT_VERSION = "v3"
+  CURRENT_VERSION = "v4"
   def index
     @users = User.all
   end

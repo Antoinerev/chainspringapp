@@ -11,10 +11,15 @@ class KnowledgeItem < ApplicationRecord
 
   def attributes
     {
-      id: nil,
+      map_id: nil,
       name: nil,
-      type: nil,
-      domain_names: nil
+      object_type: nil,
+      domain_names: nil,
+      "_color"=> nil,
+      kind: nil,
+      time_needed: nil,
+      link: nil,
+      topics: nil
       # ascendants: nil,
       # ascendants_type: nil,
       # descendants: nil,
@@ -23,18 +28,36 @@ class KnowledgeItem < ApplicationRecord
   end
 
   def name
-    self.title
+    title
   end
   def type
     self.class.to_s
   end
+  def object_type
+    type
+  end
   def ascendants
-    self.domains
+    domains
   end
   def descendants
     nil
   end
   def domain_names
-    self.domains.distinct.pluck(:name).to_sentence
+    domains.distinct.pluck(:name).to_sentence
+  end
+  def topics
+    domain_names
+  end
+  def domains_list
+    domains.uniq
+  end
+  def map_id
+    "k_#{id}"
+  end
+  def links
+    domains = domains_list.map.with_index{|domain, i| {id: "kl_#{i}", sid: domain.map_id, tid: self.map_id}}
+  end
+  def _color
+    '#42c4ef'
   end
 end
