@@ -170,20 +170,24 @@ export default {
         if(newInfo.link) {
           newInfo.link = this.checkLink(newInfo.link);
         }
-        let newKiNode = {id: Date.now(), _size: 20, _color: "#42c4ef", object_type: "KnowledgeItem",
+        let newKiNode = {id: Date.now(), _color: "#42c4ef", object_type: "KnowledgeItem",
           name: newInfo.title, kind: newInfo.kind, time_needed: newInfo.time_needed, link: newInfo.link};
         this.nodes.push(newKiNode);
-        var domainNode = this.nodes.filter(node => (node.name == newInfo.domain_name && node.object_type == "Domain"));
+        let domainNames = newInfo.domain_name.split(/[,;\t]/).map(w => w.trim());
+        domainNames.forEach(domainName => {
 
-        if(domainNode.length  < 1) {
-          domainNode = [{id: Date.now()+1, _size: 22, _labelClass: 'test-class', _color: "#fc770a", name: newInfo.domain_name, object_type: "Domain"}];
-          this.nodes.push(domainNode[0]);
-          var userNodes = this.nodes.filter(node => node.object_type == "User");
-          if(userNodes.length > 0) {
-            this.links.push({sid: userNodes[0].id, tid: domainNode[0].id});
+          var domainNode = this.nodes.filter(node => (node.name == domainName && node.object_type == "Domain"));
+
+          if(domainNode.length  < 1) {
+            domainNode = [{id: Date.now()+1, _labelClass: 'test-class', _color: "#fc770a", name: domainName, object_type: "Domain"}];
+            this.nodes.push(domainNode[0]);
+            var userNodes = this.nodes.filter(node => node.object_type == "User");
+            if(userNodes.length > 0) {
+              this.links.push({sid: userNodes[0].id, tid: domainNode[0].id});
+            }
           }
-        }
-        this.links.push({sid: domainNode[0].id, tid: newKiNode.id});
+          this.links.push({sid: domainNode[0].id, tid: newKiNode.id});
+        });
         this.sendNewKI(newInfo);
       } else if (this.editKI) {
         if(newInfo.link != this.selectedNode.link) {
