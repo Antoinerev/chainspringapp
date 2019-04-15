@@ -19,7 +19,7 @@ button {
   background-color: white;
   border-radius: 4px;
 }
-.left-pan {
+.side-pan {
   width: 20em;
   height: 25em;
   background-color: white;
@@ -27,10 +27,9 @@ button {
   padding: 1em;
   position: sticky;
   top: 10em;
-  left: 0;
   // border: thin solid rgb(38, 164, 36);
-  border-radius: 0 1em 1em 0;
   margin-left: -2px;
+  z-index: 1000;
   .close-btn {
     position: absolute;
     right: 2px;
@@ -46,18 +45,72 @@ button {
     justify-content: center;
   }
 }
-
-.slide-enter {
+.side-pan-left {
+  left: 0;
+  border-radius: 0 1em 1em 0;
+}
+.side-pan-right{
+  right: 0;
+  border-radius: 1em 0 0 1em;
+}
+#right-control-button {
+  width: 1em;
+  height: 27em;
+  background-color: rgba(0,0,0, 0.1);
+  position: absolute;
+  top: 10em;
+  right: 0;
+  z-index: 3000;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+.slideRight-enter {
   left: -20em;
 }
-.slide-enter-active {
+.slideRight-enter-active {
   transition: left 0.5s ease-out;
   // left: 0;
 }
-.slide-leave {
+.slideRight-leave {
   // left: 0;
 }
-.slide-leave-active {
+.slideRight-leave-active {
   transition: left 0.5s ease-in;
   left: -20em;
+}
+///////////////////////////
+.slideLeft-enter {
+  right: -20em;
+}
+.slideLeft-enter-active {
+  transition: right 0.5s ease-out;
+  // right: 0;
+}
+.slideLeft-leave {
+  // right: 0;
+}
+.slideLeft-leave-active {
+  transition: right 0.5s ease-in;
+  right: -20em;
+}
+#controls {
+  // width: 100%;
+  min-height: 4em;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  z-index: 2000;
+  position: absolute;
+  background-color: white;
+}
+.notice-msg {
+  color: #FF321AFF;
+}
+.fade-enter-active, .fade-leave-active {
+  transition: opacity 0.5s;
+}
+.fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */ {
+  opacity: 0;
 }

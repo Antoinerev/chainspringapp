@@ -1,53 +1,57 @@
 <template>
   <div id="app" >
-      <transition name="slide">
-        <form class="reference-form left-pan" v-if="addKI || editKI" @submit.prevent="addInfo(newKnowledgeItem), addKI=false, editKI=false" id="add_form">
-          <div @click="addKI=false, editKI=false" class="close-btn">x</div>
-          <label>Topic Name</label>
-          <input type="text" name="domain" v-model="newKnowledgeItem.domain_name" />
-          <label>Reference: title</label>
-          <input type="text" name="title" v-model="newKnowledgeItem.title" />
-          <label>Kind</label>
-          <select v-model="newKnowledgeItem.kind">
-            <option v-for="kind in allKinds" v-bind:value="kind">
-              {{ kind }}
-            </option>
-          </select>
-          <label>Time to allocate (in minutes)</label>
-          <input type="text" name="time_needed" v-model="newKnowledgeItem.time_needed" />
-          <label>Link</label>
-          <input type="text" name="link" v-model="newKnowledgeItem.link" />
-          <button type="submit">Save</button>
+    <div id="right-control-button" @click="switchRightPan">⬌</div>
+    <transition name="slideLeft">
+      <div id="controls" v-if="showRightPan" class="side-pan side-pan-right" >
+        <a v-if="mapParams.user_id" href="../users/sign_out" data-method="delete">log out</a>
+        <a v-else href="../users/sign_in">login</a>
+        <a v-if="mapParams.user_id" href="/">Show my map</a>
+        <a href="/users">Choose demo user</a>
+        <form @submit.prevent="search(keyword)" id="search_form">
+          <input name="search" v-model="keyword"/>
+          <button type="submit">Search</button>
+          <transition name="fade">
+            <div v-if="flash.show" class="notice-msg">{{flash.text}}</div>
+          </transition>
         </form>
-      </transition>
-      <transition name="slide">
-        <div class="left-pan" v-show="showInfoPan">
-          <div @click="showInfoPan=false" class="close-btn">x</div>
-          <button v-if="currentUserItem" @click="switchEditKI">editKI</button>
-          <div>Title: {{selectedKnowledgeItem.title}}</div>
-          <div> Kind: {{selectedKnowledgeItem.kind}}</div>
-          <div>Time needed: {{selectedKnowledgeItem.time_needed}}</div>
-          <div>Topics: {{selectedKnowledgeItem.topics}}</div>
-          <div>
-            <a v-if="selectedKnowledgeItem.link" :href="selectedKnowledgeItem.link" target='new'>external link</a>
-            <div v-else>No link</div>
-          </div>
-        </div>
-      </transition>
-    <div id="controls">
-      <a v-if="mapParams.user_id" href="../users/sign_out" data-method="delete">log out</a>
-      <a v-else href="../users/sign_in">login</a>
-      <a v-if="mapParams.user_id" href="/">Show my map</a>
-      <a href="/users">Choose demo user</a>
-      <form @submit.prevent="search(keyword)" id="search_form">
-        <input name="search" v-model="keyword"/>
-        <button type="submit">Search</button>
-        <transition name="fade">
-          <div v-if="flash.show" class="notice-msg">{{flash.text}}</div>
-        </transition>
+        <button v-if="currentUser" @click="switchAddKI">{{newKIButton}}</button>
+      </div>
+    </transition>
+
+    <transition name="slideRight">
+      <form class="reference-form side-pan side-pan-left" v-if="addKI || editKI" @submit.prevent="addInfo(newKnowledgeItem), addKI=false, editKI=false" id="add_form">
+        <div @click="addKI=false, editKI=false" class="close-btn">x</div>
+        <label>Reference title (keep it short !)</label>
+        <input type="text" name="title" v-model="newKnowledgeItem.title" />
+        <label>Topics Names (separated by commas)</label>
+        <input type="text" name="domain" v-model="newKnowledgeItem.domain_name" />
+        <label>Kind</label>
+        <select v-model="newKnowledgeItem.kind">
+          <option v-for="kind in allKinds" v-bind:value="kind">
+            {{ kind }}
+          </option>
+        </select>
+        <label>Time to allocate (in minutes)</label>
+        <input type="text" name="time_needed" v-model="newKnowledgeItem.time_needed" />
+        <label>Link</label>
+        <input type="text" name="link" v-model="newKnowledgeItem.link" />
+        <button type="submit">Save</button>
       </form>
-      <button v-if="currentUser" @click="switchAddKI">{{newKIButton}}</button>
-    </div>
+    </transition>
+    <transition name="slideRight">
+      <div class="side-pan side-pan-left" v-show="showInfoPan">
+        <div @click="showInfoPan=false" class="close-btn">x</div>
+        <button v-if="currentUserItem" @click="switchEditKI">editKI</button>
+        <div>Title: {{selectedKnowledgeItem.title}}</div>
+        <div> Kind: {{selectedKnowledgeItem.kind}}</div>
+        <div>Time needed: {{selectedKnowledgeItem.time_needed}}</div>
+        <div>Topics: {{selectedKnowledgeItem.topics}}</div>
+        <div>
+          <a v-if="selectedKnowledgeItem.link" :href="selectedKnowledgeItem.link" target='new'>external link</a>
+          <div v-else>No link</div>
+        </div>
+      </div>
+    </transition>
     <d3-network ref='net' :net-nodes="nodes" :net-links="links" :options="options"  @node-click="toggleMenu"/>
   </div>
 </template>
@@ -110,6 +114,7 @@ export default {
         link: 'no link',
         topics: ''
       },
+      showRightPan: false,
       showInfoPan: false,
       savedColor: ''
     }
@@ -117,7 +122,7 @@ export default {
   computed:{
     options(){
       return{
-        force: 2000,
+        force: 1000,
         forces:{
           Center: false,
           X: 0.5,
@@ -125,11 +130,11 @@ export default {
           ManyBody: true,
           Link: true
         },
-        // size:{ w: window.innerWidth, h:innerHeight * 2},
+        size:{ w: window.innerWidth, h:innerHeight * 1.5},
         nodeSize: this.mapParams.nodesize / 1,
         nodeLabels: true,
         canvas: this.canvas,
-        // offset: {x: 0, y: - innerHeight/2},
+        // offset: {x: 0, y: - innerHeight/4},
         strLinks: true
         // noNodes: true
       }
@@ -149,6 +154,13 @@ export default {
     }
   },
   methods: {
+    switchRightPan() {
+      if(this.showRightPan == false) {
+        this.addKI=false;
+        this.editKI=false;
+      }
+      this.showRightPan = !this.showRightPan;
+    },
     switchAddKI() {
       this.addKI = !this.addKI;
       if (this.addKI == true) {
