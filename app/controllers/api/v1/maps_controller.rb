@@ -34,7 +34,7 @@ class Api::V1::MapsController < Api::V1::BaseController
 
   def create_ki
     new_ki = KnowledgeItem.new(ki_params)
-    new_ki.domains << @domain
+    new_ki.domains << @domains
     if new_ki.save
       redirect_to user_path(current_user), notice: "new KI saved"
     else
@@ -46,6 +46,9 @@ class Api::V1::MapsController < Api::V1::BaseController
     edited_ki = user_kis.find(params[:newInfo][:object_id])
 
     if edited_ki.update(ki_params)
+      if edited_ki.domains != @domains
+        edited_ki.domains = @domains
+      end
       redirect_to user_path(current_user), notice: "new KI successfully edited"
     else
       redirect_to user_path(current_user), alert: "KI modifications could not be saved"
@@ -61,21 +64,25 @@ class Api::V1::MapsController < Api::V1::BaseController
   def ki_params
     # params = {newInfo: {title: "new test reference", user_id: @user.id,  domain_name: @topic.name}}
     safe_params = params.require(:newInfo).permit(:user_id, :title, :kind, :link, :time_needed)
+
     if params[:newInfo][:domain_name].present?
-      domain_name = params[:newInfo][:domain_name]
+      domain_names = params[:newInfo][:domain_name].split(/[,;\t]/).map(&:strip)
     else
-      domain_name = "Undefined"
+      domain_names = ["Undefined"]
     end
-    get_domain(domain_name)
+    get_domains(domain_names)
     return safe_params
   end
-  def get_domain(domain_name)
-    if domain_name.present?
+  def get_domains(domain_names)
+    if domain_names.first.present?
       # puts "domain_name : #{domain_name}"
-      domain = Domain.new(name: domain_name)
-      @domain = compact_similar(domain)
+      @domains = []
+      domain_names.each do |domain_name|
+        domain = Domain.new(name: domain_name)
+        @domains << compact_similar(domain)
+      end
     else
-      @domain = Domain.find_or_create_by(name: "Undefined")
+      @domains = [Domain.find_or_create_by(name: "Undefined")]
     end
   end
   def compact_similar(domain)

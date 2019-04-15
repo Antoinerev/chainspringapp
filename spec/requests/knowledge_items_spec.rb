@@ -4,6 +4,7 @@ RSpec.describe 'References requests' do
   describe 'POST new_ki' do
     before do
       @topic = FactoryBot.create(:domain)
+      @topic2 = FactoryBot.create(:topic2)
       @user = FactoryBot.create(:user)
       login_as(@user, :scope => :user)
     end
@@ -24,6 +25,20 @@ RSpec.describe 'References requests' do
       new_ki = KnowledgeItem.last
       expect(new_ki.title.capitalize).to eql(params[:newInfo][:title].capitalize)
       expect(new_ki.domains.last.name.capitalize).to eql(new_topic_name.capitalize)
+      expect(Domain.count).to eql(topics_nb + 1)
+    end
+
+    it 'creates a new reference with three topics, comma separated (2 existing 1 new)' do
+      existing_topics = "#{@topic.name}, #{@topic2.name}"
+      new_topic_name = "another new topic not in db"
+      topics_nb = Domain.count
+      topics = "#{existing_topics}, #{new_topic_name}"
+      params = {newInfo: {title: "new test reference with several topics", user_id: @user.id,  domain_name: topics}}
+      post(api_v1_map_addki_path(params))
+      new_ki = KnowledgeItem.last
+      expect(new_ki.title.capitalize).to eql(params[:newInfo][:title].capitalize)
+      expect(new_ki.domains.last.name.capitalize).to eql(new_topic_name.capitalize)
+      expect(new_ki.domains.count).to eq(3)
       expect(Domain.count).to eql(topics_nb + 1)
     end
 

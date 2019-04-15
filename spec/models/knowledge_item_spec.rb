@@ -12,6 +12,11 @@ RSpec.describe KnowledgeItem, type: :model do
     it "can be created" do
       expect(@reference).to be_valid
     end
+    it "have several domains added after creation" do
+      @reference.domains << FactoryBot.create(:topic2)
+      expect(@reference.domains.count).to eq(2)
+    end
+
     pending "cannot be created without a domain"
     # it "cannot be created without a domain_id" do
     #   @reference.domains = []
