@@ -185,28 +185,44 @@ export default {
     },
     addInfo(newInfo) {
       if(this.addKI) {
-        if(newInfo.link) {
-          newInfo.link = this.checkLink(newInfo.link);
+        const userNode = this.nodes.find(node => node.object_type == "User");
+        let domainNames = [];
+        if(newInfo.domain_name) {
+          domainNames = newInfo.domain_name.split(/[,;\t]/).map(w => w.trim());
+        } else {
+          domainNames = [""];
         }
-        let newKiNode = {id: Date.now(), _color: "#42c4ef", object_type: "KnowledgeItem",
-          name: newInfo.title, kind: newInfo.kind, time_needed: newInfo.time_needed, link: newInfo.link};
-        this.nodes.push(newKiNode);
-        let domainNames = newInfo.domain_name.split(/[,;\t]/).map(w => w.trim());
-        domainNames.forEach(domainName => {
+        let newTopicNodes = [];
+        if(this.validTopic(domainNames)) {
+          domainNames.forEach(domainName => {
+            var domainNode = this.nodes.filter(node => (node.name == domainName && node.object_type == "Domain"));
 
-          var domainNode = this.nodes.filter(node => (node.name == domainName && node.object_type == "Domain"));
-
-          if(domainNode.length  < 1) {
-            domainNode = [{id: Date.now()+1, _labelClass: 'test-class', _color: "#fc770a", name: domainName, object_type: "Domain"}];
-            this.nodes.push(domainNode[0]);
-            var userNodes = this.nodes.filter(node => node.object_type == "User");
-            if(userNodes.length > 0) {
-              this.links.push({sid: userNodes[0].id, tid: domainNode[0].id});
+            if(domainNode.length  < 1) {
+              newDomainNode = {id: Date.now()+1, _labelClass: 'test-class', _color: "#fc770a", name: domainName, object_type: "Domain"};
+              this.nodes.push(newDomainNode);
+              if(userNode) {
+                this.links.push({sid: userNode.id, tid: newDomainNode.id});
+              }
             }
+            newTopicNodes.push(newDomainNode);
+          });
+        }
+        if(this.validReference(newInfo.title)) {
+          if(newInfo.link) {
+            newInfo.link = this.checkLink(newInfo.link);
           }
-          this.links.push({sid: domainNode[0].id, tid: newKiNode.id});
-        });
-        this.sendNewKI(newInfo);
+          let newKiNode = {id: Date.now(), _color: "#42c4ef", object_type: "KnowledgeItem",
+            name: newInfo.title, kind: newInfo.kind, time_needed: newInfo.time_needed, link: newInfo.link};
+          this.nodes.push(newKiNode);
+          if(newTopicNodes.length > 0) {
+            newTopicNodes.forEach(topicNode => {
+              this.links.push({sid: topicNode.id, tid: newKiNode.id});
+            });
+          } else {
+            this.links.push({sid: userNode.id, tid: newKiNode.id});
+          }
+        }
+        // this.sendNewKI(newInfo);
       } else if (this.editKI) {
         if(newInfo.link != this.selectedNode.link) {
           newInfo.link = this.checkLink(newInfo.link);
@@ -221,6 +237,20 @@ export default {
         editedKINode.time_needed = newInfo.time_needed;
         editedKINode.link = newInfo.link;
         this.sendEditKI(editedKINode);
+      }
+    },
+    validTopic(topicNames) {
+      if(topicNames[0].length > 1) {
+        return true;
+      } else {
+        return false;
+      }
+    },
+    validReference(refTitle) {
+      if(refTitle.length > 1) {
+        return true;
+      } else {
+        return false;
       }
     },
     checkLink(link) {

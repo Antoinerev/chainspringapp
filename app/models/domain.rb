@@ -8,6 +8,7 @@ class Domain < ApplicationRecord
   after_initialize ->{capitalize_all('name')}
 
   validates :name, uniqueness: { case_sensitive: :false }
+  # TODO validates at least 1 ki
 
   def attributes
     {

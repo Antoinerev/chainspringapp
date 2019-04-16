@@ -8,4 +8,7 @@ FactoryBot.define do
   factory :topic2, class: Domain do
     name { "growth hacking" }
   end
+  factory :topic_without_ref, class: Domain do
+    name { "unref topic" }
+  end
 end

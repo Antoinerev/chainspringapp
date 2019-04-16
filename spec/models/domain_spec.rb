@@ -15,7 +15,10 @@ RSpec.describe Domain, type: :model do
       expect(@topic2).to_not be_valid
     end
 
-    pending  "can be created without a reference"
+    it "can be created without a reference" do
+      topic2 = FactoryBot.create(:topic_without_ref)
+      expect(topic2).to be_valid
+    end
 
   end
 end
