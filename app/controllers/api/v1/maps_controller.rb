@@ -34,11 +34,20 @@ class Api::V1::MapsController < Api::V1::BaseController
 
   def create_ki
     new_ki = KnowledgeItem.new(ki_params)
-    new_ki.domains << @domains
+    subject = "reference"
+    if new_ki.title.blank?
+      if @domains
+        new_ki.title = @domains.collect(&:name).join('-')
+        subject = "topic(s)"
+      else
+        new_ki = KnowledgeItem.new
+      end
+    end
+    new_ki.domains << @domains if @domains
     if new_ki.save
-      redirect_to user_path(current_user), notice: "new KI saved"
+      redirect_to user_path(current_user), notice: "new #{subject} saved"
     else
-      redirect_to user_path(current_user), alert: "new KI could not be saved"
+      redirect_to user_path(current_user), alert: "new #{subject} could not be saved"
     end
   end
   def update_ki
@@ -68,7 +77,7 @@ class Api::V1::MapsController < Api::V1::BaseController
     if params[:newInfo][:domain_name].present?
       domain_names = params[:newInfo][:domain_name].split(/[,;\t]/).map(&:strip)
     else
-      domain_names = ["Undefined"]
+      domain_names = []
     end
     get_domains(domain_names)
     return safe_params
@@ -82,7 +91,8 @@ class Api::V1::MapsController < Api::V1::BaseController
         @domains << compact_similar(domain)
       end
     else
-      @domains = [Domain.find_or_create_by(name: "Undefined")]
+      # @domains = [Domain.find_or_create_by(name: "Undefined")]
+      @domains = nil
     end
   end
   def compact_similar(domain)

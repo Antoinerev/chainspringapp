@@ -194,6 +194,7 @@ export default {
         }
         let newTopicNodes = [];
         if(this.validTopic(domainNames)) {
+          let newDomainNode = {};
           domainNames.forEach(domainName => {
             var domainNode = this.nodes.filter(node => (node.name == domainName && node.object_type == "Domain"));
 
@@ -222,7 +223,7 @@ export default {
             this.links.push({sid: userNode.id, tid: newKiNode.id});
           }
         }
-        // this.sendNewKI(newInfo);
+        this.sendNewKI(newInfo);
       } else if (this.editKI) {
         if(newInfo.link != this.selectedNode.link) {
           newInfo.link = this.checkLink(newInfo.link);
