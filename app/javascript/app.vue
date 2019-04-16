@@ -2,9 +2,14 @@
   <div id="app" >
     <div id="right-control-button" @click="switchRightPan">⬌</div>
     <transition name="slideLeft">
-      <div id="controls" v-if="showRightPan" class="side-pan side-pan-right" >
+      <div id="controls" v-show="showRightPan" class="side-pan side-pan-right" >
         <a v-if="mapParams.user_id" href="../users/sign_out" data-method="delete">log out</a>
         <a v-else href="../users/sign_in">login</a>
+        <span>
+          <i @click="takeScreenshot" class="fas fa-share-alt"></i>
+          share
+        </span>
+        <a v-if="currentUser" @click="switchAddKI">{{newKIButton}}</a>
         <a v-if="mapParams.user_id" href="/">Show my map</a>
         <a href="/users">Choose demo user</a>
         <form @submit.prevent="search(keyword)" id="search_form">
@@ -14,12 +19,12 @@
             <div v-if="flash.show" class="notice-msg">{{flash.text}}</div>
           </transition>
         </form>
-        <button v-if="currentUser" @click="switchAddKI">{{newKIButton}}</button>
       </div>
     </transition>
 
     <transition name="slideRight">
-      <form class="reference-form side-pan side-pan-left" v-if="addKI || editKI" @submit.prevent="addInfo(newKnowledgeItem), addKI=false, editKI=false" id="add_form">
+      <form id="add_form" class="reference-form side-pan side-pan-left" v-if="addKI || editKI"
+        @submit.prevent="addInfo(newKnowledgeItem), addKI=false, editKI=false" >
         <div @click="addKI=false, editKI=false" class="close-btn">x</div>
         <label>Reference title (keep it short !)</label>
         <input type="text" name="title" v-model="newKnowledgeItem.title" />
@@ -39,7 +44,7 @@
       </form>
     </transition>
     <transition name="slideRight">
-      <div class="side-pan side-pan-left" v-show="showInfoPan">
+      <div id="show-ki-pan" class="side-pan side-pan-left" v-show="showInfoPan">
         <div @click="showInfoPan=false" class="close-btn">x</div>
         <button v-if="currentUserItem" @click="switchEditKI">editKI</button>
         <div>Title: {{selectedKnowledgeItem.title}}</div>
@@ -141,9 +146,9 @@ export default {
     },
     newKIButton() {
       if(this.addKI){
-        return "Hide form"
+        return "Close pan"
       } else {
-        return "Add reference"
+        return "Add content"
       }
     },
     currentUser() {
@@ -154,16 +159,17 @@ export default {
     }
   },
   methods: {
+    takeScreenshot() {
+      this.$refs.net.screenShot("my_map.png");
+    },
     switchRightPan() {
-      if(this.showRightPan == false) {
-        this.addKI=false;
-        this.editKI=false;
-      }
+      if(this.showRightPan == false) { this.showInfoPan=false }
       this.showRightPan = !this.showRightPan;
     },
     switchAddKI() {
       this.addKI = !this.addKI;
       if (this.addKI == true) {
+        this.showRightPan = false;
         this.editKI = false;
         this.newKnowledgeItem = this.nodes[0];
         this.showInfoPan = false;

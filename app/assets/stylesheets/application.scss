@@ -20,7 +20,6 @@ button {
   border-radius: 4px;
 }
 .side-pan {
-  width: 20em;
   height: 25em;
   background-color: white;
   box-shadow: 2px 2px 1px #F1F1F1;
@@ -46,12 +45,16 @@ button {
   }
 }
 .side-pan-left {
+  width: 20em;
   left: 0;
   border-radius: 0 1em 1em 0;
+  background-color: rgba(245,245,245,1);
 }
 .side-pan-right{
+  width: 10em;
   right: 0;
   border-radius: 1em 0 0 1em;
+  background-color: rgba(245,245,245,1);
 }
 #right-control-button {
   width: 1em;
@@ -100,13 +103,19 @@ button {
   display: flex;
   flex-direction: column;
   justify-content: center;
-  align-items: center;
+  align-items: flex-end;
   z-index: 2000;
   position: absolute;
-  background-color: white;
+  // background-color: white;
+  line-height: 1.5;
 }
 .notice-msg {
   color: #FF321AFF;
+}
+#search_form {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
 }
 .fade-enter-active, .fade-leave-active {
   transition: opacity 0.5s;
