@@ -25,9 +25,8 @@ button {
   box-shadow: 2px 2px 1px #F1F1F1;
   padding: 1em;
   position: sticky;
-  top: 10em;
   // border: thin solid rgb(38, 164, 36);
-  margin-left: -2px;
+  // margin-left: -2px;
   z-index: 1000;
   .close-btn {
     position: absolute;
@@ -45,57 +44,64 @@ button {
   }
 }
 .side-pan-left {
-  width: 20em;
-  left: 0;
+  bottom: 8vh;
+  width: 60vw;
+  // left: 0;
   border-radius: 0 1em 1em 0;
   background-color: rgba(245,245,245,1);
 }
 .side-pan-right{
-  width: 10em;
-  right: 0;
+  top: 3em;
+  width: 46vw;
+  left: 35vw;
+  padding-right: 14vw;
   border-radius: 1em 0 0 1em;
   background-color: rgba(245,245,245,1);
 }
 #right-control-button {
-  width: 1em;
-  height: 27em;
-  background-color: rgba(0,0,0, 0.1);
-  position: absolute;
-  top: 10em;
-  right: 0;
-  z-index: 3000;
-  display: flex;
   flex-direction: column;
   justify-content: center;
+  align-items: center;
+  border-radius: 10em 0 0 10em;
+  width: 11vw;
+  height: 27em;
+  background-color: rgba(0,0,0, 0.1);
+  position: sticky;
+  top: 3em;
+  left: 100vw;
+  margin-right: -10px;
+  z-index: 3000;
+  display: flex;
 }
 .slideRight-enter {
-  left: -20em;
+  // left: -20em;
+  margin-left: -70vw;
 }
 .slideRight-enter-active {
-  transition: left 0.5s ease-out;
+  transition: margin-left 0.5s ease-out;
   // left: 0;
 }
 .slideRight-leave {
   // left: 0;
 }
 .slideRight-leave-active {
-  transition: left 0.5s ease-in;
-  left: -20em;
+  transition: margin-left 0.5s ease-in;
+  margin-left: -70vw;
 }
 ///////////////////////////
 .slideLeft-enter {
-  right: -20em;
+  left: 100vw;
 }
 .slideLeft-enter-active {
-  transition: right 0.5s ease-out;
+  transition: left 0.5s ease-out;
   // right: 0;
 }
 .slideLeft-leave {
   // right: 0;
 }
 .slideLeft-leave-active {
-  transition: right 0.5s ease-in;
-  right: -20em;
+  transition: left 0.5s ease-in;
+  left: 100vw;
 }
 #controls {
   // width: 100%;

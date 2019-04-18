@@ -1,6 +1,9 @@
 <template>
   <div id="app" >
-    <div id="right-control-button" @click="switchRightPan">⬌</div>
+    <div id="right-control-button" @click="switchRightPan">
+      <i v-if="showRightPan" class="fas fa-chevron-right"></i>
+      <i v-else class="fas fa-chevron-left"></i>
+    </div>
     <transition name="slideLeft">
       <div id="controls" v-show="showRightPan" class="side-pan side-pan-right" >
         <a v-if="mapParams.user_id" href="../users/sign_out" data-method="delete">log out</a>
