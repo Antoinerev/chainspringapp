@@ -6,7 +6,11 @@ class UsersController < ApplicationController
   end
 
   def show
-    if params[:id]
+    # TODO : fix session destroy from Vue app
+    if params[:id] == "sign_out"
+      redirect_to signout_path and return
+    end
+    if params[:id].to_i > 0
       @user = User.find(params[:id])
     elsif current_user
       @user = current_user

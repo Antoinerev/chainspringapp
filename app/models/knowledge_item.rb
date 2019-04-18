@@ -2,7 +2,7 @@ class KnowledgeItem < ApplicationRecord
   include ActiveModel::Serializers::JSON
 
   belongs_to :user
-  has_many :knowledge_item_domains
+  has_many :knowledge_item_domains, dependent: :destroy
   has_many :domains, through: :knowledge_item_domains
 
   enum kind: {undefined: 0, book: 1, online_text: 2, online_video: 3, mobile_app: 4, place: 5, website: 6}

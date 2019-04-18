@@ -6,22 +6,37 @@
     </div>
     <transition name="slideLeft">
       <div id="controls" v-show="showRightPan" class="side-pan side-pan-right" >
-        <a v-if="mapParams.user_id" href="../users/sign_out" data-method="delete">log out</a>
-        <a v-else href="../users/sign_in">login</a>
-        <span @click="takeScreenshot">
-          <i class="fas fa-share-alt"></i>
+        <a v-if="mapParams.user_id" href="../users/sign_out" data-method="delete">
+          log out
+          <i class="fas fa-sign-out-alt"></i>
+        </a>
+        <a v-else href="../users/sign_in">
+          login
+          <i class="fas fa-sign-in-alt"></i>
+        </a>
+        <a @click="takeScreenshot">
           share
-        </span>
-        <a v-if="currentUser" @click="switchAddKI">{{newKIButton}}</a>
-        <a v-if="mapParams.user_id" href="/">Show my map</a>
-        <a href="/users">Choose demo user</a>
+          <i class="fas fa-share-alt"></i>
+        </a>
+        <a v-if="currentUser" @click="switchAddKI">
+          {{newKIButton}}
+          <i class="fas fa-plus-circle"></i>
+        </a>
+        <a v-if="mapParams.user_id" href="/">
+          Show my profile
+          <i class="far fa-map"></i>
+        </a>
         <form @submit.prevent="search(keyword)" id="search_form">
           <input name="search" v-model="keyword"/>
-          <button type="submit">Search</button>
+          <button type="submit">Search <i class="fas fa-search"></i></button>
           <transition name="fade">
             <div v-if="flash.show" class="notice-msg">{{flash.text}}</div>
           </transition>
         </form>
+        <a href="/users">
+          Choose demo user
+          <i class="fas fa-users"></i>
+        </a>
       </div>
     </transition>
 
