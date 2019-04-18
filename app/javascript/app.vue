@@ -25,39 +25,36 @@
       </div>
     </transition>
 
+
     <transition name="slideRight">
       <form id="add_form" class="reference-form side-pan side-pan-left" v-if="addKI || editKI"
         @submit.prevent="addInfo(newKnowledgeItem), addKI=false, editKI=false" >
         <div @click="showInfoPan=false, addKI=false, editKI=false" class="close-btn" id="left-close-button" >
           <i class="fas fa-chevron-left"></i>
         </div>
-        <label>Reference title (keep it short !)</label>
+        <label>Reference title<br>(keep it short !)</label>
         <input type="text" name="title" v-model="newKnowledgeItem.title" />
-        <label>Topics Names (separated by commas)</label>
+        <label>Topics Names<br>(separated by commas)</label>
         <input type="text" name="domain" v-model="newKnowledgeItem.domain_name" />
-        <label>Kind</label>
+        <label>Format</label>
         <select v-model="newKnowledgeItem.kind">
           <option v-for="kind in allKinds" v-bind:value="kind">
             {{ kind }}
           </option>
         </select>
-        <label>Time to allocate (in minutes)</label>
-        <input type="text" name="time_needed" v-model="newKnowledgeItem.time_needed" />
         <label>Link</label>
         <input type="text" name="link" v-model="newKnowledgeItem.link" />
         <button type="submit">Save</button>
       </form>
-    </transition>
-    <transition name="slideRight">
+
       <div id="show-ki-pan" class="side-pan side-pan-left" v-show="showInfoPan">
         <div @click="showInfoPan=false" class="close-btn" id="left-close-button" >
           <i class="fas fa-chevron-left"></i>
         </div>
         <button v-if="currentUserItem" @click="switchEditKI">editKI</button>
-        <div>Title: {{selectedKnowledgeItem.title}}</div>
-        <div> Kind: {{selectedKnowledgeItem.kind}}</div>
-        <div>Time needed: {{selectedKnowledgeItem.time_needed}}</div>
-        <div>Topics: {{selectedKnowledgeItem.topics}}</div>
+        <div>Title:<br> <span class="refText"> {{selectedKnowledgeItem.title}}</span></div>
+        <div> Format:<br> <span class="refText"> {{selectedKnowledgeItem.kind}}</span></div>
+        <div>Topics:<br> <span class="refText"> {{selectedKnowledgeItem.topics}}</span></div>
         <div>
           <a v-if="selectedKnowledgeItem.link" :href="selectedKnowledgeItem.link" target='new'>external link</a>
           <div v-else>No link</div>
@@ -196,6 +193,7 @@ export default {
       }
     },
     addInfo(newInfo) {
+      newInfo.time_needed = "";
       if(this.addKI) {
         const userNode = this.nodes.find(node => node.object_type == "User");
         let domainNames = [];
