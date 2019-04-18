@@ -5,8 +5,8 @@
       <div id="controls" v-show="showRightPan" class="side-pan side-pan-right" >
         <a v-if="mapParams.user_id" href="../users/sign_out" data-method="delete">log out</a>
         <a v-else href="../users/sign_in">login</a>
-        <span>
-          <i @click="takeScreenshot" class="fas fa-share-alt"></i>
+        <span @click="takeScreenshot">
+          <i class="fas fa-share-alt"></i>
           share
         </span>
         <a v-if="currentUser" @click="switchAddKI">{{newKIButton}}</a>
@@ -73,6 +73,7 @@ export default {
     // this.setInitialMap();
     this.nodes = this.initialNodes;
     this.links = this.initialLinks;
+    this.colorMap();
 
     // // Static test example
     // this.nodes = [
@@ -317,6 +318,34 @@ export default {
       node["_color"] = '#FF0000';
       this.selectedNode = node;
     },
+    colorMap() {
+      const topicColors = [
+        'rgb(0,0,130)','rgb(0,130,0)','rgb(130,0,0)','rgb(0,130,130)','rgb(130,130,0)','rgb(130,0,130)',
+        'rgb(0,0,220)','rgb(0,220,0)','rgb(220,0,0)','rgb(0,220,220)','rgb(220,220,0)','rgb(220,0,220)',
+        'rgb(130,0,220)','rgb(130,220,0)','rgb(220,130,0)','rgb(130,220,220)','rgb(220,220,130)','rgb(220,130,220)'
+      ];
+      let topicNodes = this.nodes.filter(node => node.id[0] == "d");
+      let cont = 0;
+      topicNodes.forEach(topic => {
+        topic["_color"] = topicColors[cont];
+        this.colorRefs(topic);
+        if(cont == topicColors.length - 1) {
+          cont = 0;
+        } else {
+          cont++
+        }
+      });
+    },
+    colorRefs(topicNode) {
+      const topicSpecificRefsColor = this.lightenColor(topicNode["_color"]);
+      console.log({topicSpecificRefsColor});
+      let links = this.links.filter(link => link.sid == topicNode.id);
+      links.forEach(link => {
+        let ref = this.nodes.find(node => node.id == link.tid);
+        ref["_color"] = topicSpecificRefsColor;
+        console.log({ref});
+      });
+    },
     setInitialMap() {
       let node = this.initialNodes[0];
       let descendantLinks = this.initialLinks.filter(link => link.sid == node.id);
@@ -448,7 +477,33 @@ export default {
         }
       });
       this.links = this.initialLinks.concat(refreshedLinks);
-    }
+    },
+    lightenColor(rgbColor) {
+      const m = rgbColor.match(/^rgb\s*\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*\)$/i);
+      if( m) {
+        const incr = 60;
+        const newR = Math.min(parseInt(m[1])+incr, 255);
+        const newG = Math.min(parseInt(m[2])+incr, 255);
+        const newB = Math.min(parseInt(m[3])+incr, 255);
+        return 'rgb(' + newR + ',' + newG + ',' + newB + ')';
+      } else {
+        return rgbColor;
+      }
+    }//,
+    // randomShadeOfColor(rgbColor) {
+    //   const m = rgbColor.match(/^rgb\s*\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*\)$/i);
+    //   if( m) {
+    //     let baseR = m[1];
+    //     let baseG = m[2];
+    //     let baseB = m[3];
+    //     let incr = 20;
+    //     let topBase = Math.max(baseR, baseG, baseB);
+    //     let randCol = (Math.floor((Math.random() * Math.floor(255-topBase))/incr))*incr;
+    //     return 'rgb(' + (baseR+randCol) + ',' + (baseG+randCol) + ',' + (baseB+randCol) + ')';
+    //   } else {
+    //     return rgbColor;
+    //   }
+    // }
   }
 }
 </script>

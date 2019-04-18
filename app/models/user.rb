@@ -5,7 +5,7 @@ class User < ApplicationRecord
   devise :database_authenticatable, :registerable,
          :recoverable, :rememberable, :validatable
 
-  has_many :knowledge_items
+  has_many :knowledge_items, dependent: :destroy
   has_many :domains, through: :knowledge_items
 
   def attributes

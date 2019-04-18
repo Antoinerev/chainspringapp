@@ -40,7 +40,7 @@ class Domain < ApplicationRecord
     "d_#{self.id}"
   end
   def _color
-    "#fc770a"
+    "rgb(49,136,164)"
   end
   def kis_list
     super
