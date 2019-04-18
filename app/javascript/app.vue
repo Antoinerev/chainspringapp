@@ -28,7 +28,9 @@
     <transition name="slideRight">
       <form id="add_form" class="reference-form side-pan side-pan-left" v-if="addKI || editKI"
         @submit.prevent="addInfo(newKnowledgeItem), addKI=false, editKI=false" >
-        <div @click="addKI=false, editKI=false" class="close-btn">x</div>
+        <div @click="showInfoPan=false, addKI=false, editKI=false" class="close-btn" id="left-close-button" >
+          <i class="fas fa-chevron-left"></i>
+        </div>
         <label>Reference title (keep it short !)</label>
         <input type="text" name="title" v-model="newKnowledgeItem.title" />
         <label>Topics Names (separated by commas)</label>
@@ -48,7 +50,9 @@
     </transition>
     <transition name="slideRight">
       <div id="show-ki-pan" class="side-pan side-pan-left" v-show="showInfoPan">
-        <div @click="showInfoPan=false" class="close-btn">x</div>
+        <div @click="showInfoPan=false" class="close-btn" id="left-close-button" >
+          <i class="fas fa-chevron-left"></i>
+        </div>
         <button v-if="currentUserItem" @click="switchEditKI">editKI</button>
         <div>Title: {{selectedKnowledgeItem.title}}</div>
         <div> Kind: {{selectedKnowledgeItem.kind}}</div>
@@ -167,7 +171,11 @@ export default {
       this.$refs.net.screenShot("my_map.png");
     },
     switchRightPan() {
-      if(this.showRightPan == false) { this.showInfoPan=false }
+      if(this.showRightPan == false) {
+        this.addKI = false;
+        this.editKI = false;
+        this.showInfoPan = false;
+      }
       this.showRightPan = !this.showRightPan;
     },
     switchAddKI() {
@@ -307,6 +315,7 @@ export default {
           link: node.link,
           topics: node.topics
         };
+        this.showRightPan = false;
         this.showInfoPan = true;
       } else {
         this.refreshMap(event, node);
