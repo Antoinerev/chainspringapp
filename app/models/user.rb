@@ -55,7 +55,7 @@ class User < ApplicationRecord
     return nodes
   end
   def node
-    {id: self.map_id, name: self.name, object_type: self.type, "_color"=> '#26a424'}
+    {id: self.map_id, name: self.name, object_type: self.type, "_color"=> 'rgb(209,95,0)'}
   end
   def links
     user_to_domains = descendants.map.with_index{|domain, i| {id: "ul_#{i}", sid: self.map_id, tid: domain.map_id}}

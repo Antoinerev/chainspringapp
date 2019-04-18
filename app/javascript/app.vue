@@ -338,12 +338,10 @@ export default {
     },
     colorRefs(topicNode) {
       const topicSpecificRefsColor = this.lightenColor(topicNode["_color"]);
-      console.log({topicSpecificRefsColor});
       let links = this.links.filter(link => link.sid == topicNode.id);
       links.forEach(link => {
         let ref = this.nodes.find(node => node.id == link.tid);
         ref["_color"] = topicSpecificRefsColor;
-        console.log({ref});
       });
     },
     setInitialMap() {
