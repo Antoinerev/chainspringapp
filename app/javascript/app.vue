@@ -61,7 +61,8 @@
         <input type="text" name="link" v-model="newKnowledgeItem.link" />
         <button type="submit">Save</button>
       </form>
-
+    </transition>
+    <transition name="slideRight">
       <div id="show-ki-pan" class="side-pan side-pan-left" v-show="showInfoPan">
         <div @click="showInfoPan=false" class="close-btn" id="left-close-button" >
           <i class="fas fa-chevron-left"></i>
@@ -224,7 +225,8 @@ export default {
             var domainNode = this.nodes.filter(node => (node.name == domainName && node.object_type == "Domain"));
 
             if(domainNode.length  < 1) {
-              newDomainNode = {id: Date.now()+1, _labelClass: 'test-class', _color: "#fc770a", name: domainName, object_type: "Domain"};
+              const newDId = "d_" + Math.random()*999+1000;
+              newDomainNode = {id: newDId, _labelClass: 'test-class', _color: "#fc770a", name: domainName, object_type: "Domain"};
               this.nodes.push(newDomainNode);
               if(userNode) {
                 this.links.push({sid: userNode.id, tid: newDomainNode.id});
@@ -237,10 +239,13 @@ export default {
           if(newInfo.link) {
             newInfo.link = this.checkLink(newInfo.link);
           }
-          let newKiNode = {id: Date.now(), _color: "#42c4ef", object_type: "KnowledgeItem",
+          const newKiId = "k_" + Math.random()*999+1000;
+          // TODO get color from refs with same topic
+          let newKiNode = {id: newKiId, _color: "#42c4ef", object_type: "KnowledgeItem",
             name: newInfo.title, kind: newInfo.kind, time_needed: newInfo.time_needed, link: newInfo.link};
           this.nodes.push(newKiNode);
           if(newTopicNodes.length > 0) {
+            // this.colorRefs(newTopicNodes[0]);
             newTopicNodes.forEach(topicNode => {
               this.links.push({sid: topicNode.id, tid: newKiNode.id});
             });
@@ -248,6 +253,7 @@ export default {
             this.links.push({sid: userNode.id, tid: newKiNode.id});
           }
         }
+        this.colorMap();
         this.sendNewKI(newInfo);
       } else if (this.editKI) {
         if(newInfo.link != this.selectedNode.link) {
@@ -380,6 +386,17 @@ export default {
       this.nodes.unshift(node);
       this.links = descendantLinks;
     },
+    setTopicCenteredMap(topicNode) {
+      let node = this.initialNodes[0];
+      let links = this.links.filter(link => (link.sid == topicNode.id || link.tid == topicNode.id));
+      let relatedNodes = [];
+      links.forEach(link => {
+        relatedNodes = relatedNodes.concat(this.nodes.filter(node => (node.id == link.tid || node.id == link.sid)));
+      });
+      this.nodes = relatedNodes;
+      this.nodes.unshift(node);
+      this.links = links;
+    },
     refreshMap(event, node) {
       if(this.links.filter(link => link.sid == node.id).length > 0) {
         console.log('api call');
@@ -457,6 +474,7 @@ export default {
       window.scrollTo(0,1000);
     },
     updateMapFromApi(node_id, object_type) {
+      let node = this.nodes.find(node => node.id == node_id);
       var api_url = `/api/${this.api_version}/map/build`;
       var requestParams = {
             params: {
@@ -472,10 +490,10 @@ export default {
         })
         .then(data => {
           this.name = data.map.name;
-          this.setInitialMap()
           this.addNodeIfNew(data.map.nodes);
           this.addLinkIfNew(data.map.links);
           this.alternative_nodes = data.alternative_nodes;
+          this.setTopicCenteredMap(node)
         });
       // window.scrollTo(0,1000);
     },
