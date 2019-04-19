@@ -86,14 +86,7 @@
 export default {
   props: ['d3-network', 'map-params'],
   created() {
-    this.initialNodes = this.mapParams.nodes;
-    this.initialLinks = this.mapParams.links;
-    this.allKinds = this.mapParams.allKinds;
-    this.build_version = this.mapParams.build_version;
-    // this.setInitialMap();
-    this.nodes = this.initialNodes;
-    this.links = this.initialLinks;
-    this.colorMap();
+    this.createUserMap(this.mapParams);
 
     // // Static test example
     // this.nodes = [
@@ -180,6 +173,15 @@ export default {
     }
   },
   methods: {
+    createUserMap(map) {
+      this.initialNodes = map.nodes;
+      this.initialLinks = map.links;
+      this.allKinds = map.allKinds;
+      this.build_version = map.build_version;
+      this.nodes = this.initialNodes;
+      this.links = this.initialLinks;
+      this.colorMap();
+    },
     takeScreenshot() {
       this.$refs.net.screenShot("my_map.png");
     },
@@ -491,7 +493,11 @@ export default {
         .then(data => {
           this.name = data.map.name;
           if(object_type == "User") {
-            this.setInitialMap();
+            if(node == this.initialNodes[0]) {
+              this.setInitialMap();
+            } else {
+              this.createUserMap(data.map);
+            }
           }
           this.addNodeIfNew(data.map.nodes);
           this.addLinkIfNew(data.map.links);
