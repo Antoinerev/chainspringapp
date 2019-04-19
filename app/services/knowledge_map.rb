@@ -42,9 +42,9 @@ class KnowledgeMap
         @nodes = user_json[:nodes]
         @links = user_json[:links]
       elsif @node_object.type == 'Domain'
-        ki_nodes = @node_object.kis_list.each{|node| node["_color"] = "#89C4D9"}
-        user_nodes = @node_object.users_list.each{|node| node["_color"] = "#6BAE35"}
-        @nodes = [@node_object.node] + user_nodes + ki_nodes
+        # ki_nodes = @node_object.kis_list.each{|node| node["_color"] = "#89C4D9"}
+        # user_nodes = @node_object.users_list.each{|node| node["_color"] = "#6BAE35"}
+        @nodes = [@node_object.node] + @node_object.users_list + @node_object.kis_list
         @links = @node_object.links
       end
       return {name: @node_object.name, nodes: @nodes, links: @links.uniq, allKinds: KnowledgeItem.kinds.keys}
