@@ -490,10 +490,15 @@ export default {
         })
         .then(data => {
           this.name = data.map.name;
+          if(object_type == "User") {
+            this.setInitialMap();
+          }
           this.addNodeIfNew(data.map.nodes);
           this.addLinkIfNew(data.map.links);
           this.alternative_nodes = data.alternative_nodes;
-          this.setTopicCenteredMap(node)
+          if(object_type == "Domain") {
+            this.setTopicCenteredMap(node)
+          }
         });
       // window.scrollTo(0,1000);
     },
