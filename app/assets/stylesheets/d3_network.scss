@@ -12,7 +12,7 @@ canvas {
 .node {
   -webkit-transition: fill .5s ease;
   fill: #dcfaf3;
-  stroke: rgba(18,120,98,.7);
+  stroke: rgba(0,0,0,.3);
   stroke-width: 3px;
   transition: fill .5s ease;
 }
@@ -26,7 +26,7 @@ canvas {
   stroke: rgba(190,56,93,.6);
 }
 .link {
-  stroke: #87db1c;
+  stroke: rgba(0,0,0,.2);
 }
 .link {
   stroke-linecap: round;
@@ -35,7 +35,7 @@ canvas {
 }
 .node {
   stroke-linecap: round;
-  stroke-width: 0px;
+  stroke-width: 1px;
 }
 .link:hover {
   stroke: #be385d;
