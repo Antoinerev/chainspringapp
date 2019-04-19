@@ -18,7 +18,6 @@ class Api::V1::MapsController < Api::V1::BaseController
       keyword = params[:keyword]
     @nodes_array = []
     begin
-      puts keyword
       k = Domain.arel_table
       nodes = Domain.where(k[:name].matches("%#{keyword}%")).limit(6)
       @nodes_array += nodes.to_a

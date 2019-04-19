@@ -86,7 +86,7 @@
 export default {
   props: ['d3-network', 'map-params'],
   created() {
-    this.createUserMap(this.mapParams);
+    this.createMap(this.mapParams);
 
     // // Static test example
     // this.nodes = [
@@ -173,7 +173,7 @@ export default {
     }
   },
   methods: {
-    createUserMap(map) {
+    createMap(map) {
       this.initialNodes = map.nodes;
       this.initialLinks = map.links;
       this.allKinds = map.allKinds;
@@ -448,10 +448,11 @@ export default {
       // }
     },
     search(keyword) {
-      var api_url = '/api/v1/map/search';
+      var api_url = `/api/${this.api_version}/map/search`;
       var requestParams = {
             params: {
-              keyword: keyword
+              keyword: keyword,
+              build_version: this.build_version
             }
           }
       this.$http
@@ -465,6 +466,8 @@ export default {
             this.nodes = data.map.nodes;
             this.links = data.map.links;
             this.alternative_nodes = data.alternative_nodes;
+            this.showRightPan = false;
+            this.createMap(data.map);
           } else {
             this.flash.text = "searching " + this.keyword + ": " + data.map.message;
             this.flash.show = true;
@@ -473,7 +476,7 @@ export default {
             }, 3000);
           }
         });
-      window.scrollTo(0,1000);
+      // window.scrollTo(0,1000);
     },
     updateMapFromApi(node_id, object_type) {
       let node = this.nodes.find(node => node.id == node_id);
@@ -496,7 +499,7 @@ export default {
             if(node == this.initialNodes[0]) {
               this.setInitialMap();
             } else {
-              this.createUserMap(data.map);
+              this.createMap(data.map);
             }
           }
           this.addNodeIfNew(data.map.nodes);

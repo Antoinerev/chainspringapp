@@ -48,6 +48,9 @@ class Domain < ApplicationRecord
   def users_list
     users.collect(&:node)
   end
+  def node
+    {id: self.map_id, name: self.name, object_type: self.type}
+  end
   def links
     domain_to_kis = descendants.map.with_index{|ki, i| {id: "dkl_#{i}", sid: self.map_id, tid: ki.map_id}}
     domain_to_users = ascendants.map.with_index{|user, i| {id: "dul_#{i}", sid: user.map_id, tid: self.map_id}}
