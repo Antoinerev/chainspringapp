@@ -1,24 +1,19 @@
 # README
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
+This application is a prototype of the ChainSpring App which aimed at creating an alternative relationship to knowledge by letting users fill in a very limited number of ressources that had the most impact on their lives.
 
-Things you may want to cover:
+Technical details:
 
-* Ruby version
+* Ruby 2.5.0
 
-* System dependencies
+* Rails 5.2.3
 
-* Configuration
+* Vue 2.5 with webpacker
 
-* Database creation
+* Dependencies:
+  * Axios
+  * vue-d3-network
 
-* Database initialization
+* Postgresql
 
-* How to run the test suite
-
-* Services (job queues, cache servers, search engines, etc.)
-
-* Deployment instructions
-
-* ...
+* Tested with rspec
