@@ -150,7 +150,7 @@ export default {
           Link: true
         },
         size:{ w: window.innerWidth, h:innerHeight * 1.5},
-        nodeSize: this.mapParams.nodesize / 1,
+        nodeSize: this.mapParams.nodesize / 1.5,
         nodeLabels: true,
         canvas: this.canvas,
         // offset: {x: 0, y: - innerHeight/4},
